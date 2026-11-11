@@ -292,10 +292,13 @@
     <div class="info-footer" data-i18n="footerText">
       As medições são feitas enviando pequenas requisições com cache desabilitado para servidores Cloudflare.<br>
       Isso mede o Round Trip Time (RTT) real da sua conexão sem consumir sua franquia de dados.
+      <br><span style="color: var(--accent); font-weight: 600; margin-top: 0.5rem; display: inline-block;">Versão: v1.4.0</span>
     </div>
   </div>
 
   <script>
+    console.log("Minha Internet Tá Boa? - Versão: v1.4.0 carregada.");
+
     // Dicionário de Traduções
     const translations = {
       pt: {
@@ -378,8 +381,8 @@
 
     let currentLang = 'pt';
 
-    // Configurações de Rede e Estado
-    const PING_ENDPOINT = 'https://cloudflare.com/cdn-cgi/trace';
+    // Configurações de Rede e Estado (Usando um endpoint leve e universal)
+    const PING_ENDPOINT = 'https://www.cloudflare.com/favicon.ico';
     const INTERVAL_MS = 2000;
     const TIMEOUT_MS = 3000;
     const MAX_HISTORY = 30;
@@ -537,7 +540,7 @@
       const startTime = performance.now();
 
       try {
-        // Cache bust para garantir resposta real da rede
+        // Usando GET simples com no-store para medir RTT real sem bloqueios de CORS
         await fetch(`${PING_ENDPOINT}?t=${Date.now()}`, {
           method: 'GET',
           mode: 'no-cors',
