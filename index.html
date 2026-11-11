@@ -1,0 +1,741 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Minha Internet Tá Boa?</title>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --card-bg: #1e293b;
+      --card-border: #334155;
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      --accent: #38bdf8;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 2rem 1rem;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 900px;
+    }
+
+    .top-bar {
+      display: flex;
+      justify-content: flex-end;
+      margin-bottom: 1rem;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+
+    header h1 {
+      font-size: 2rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+      color: #fff;
+    }
+
+    header p {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+    }
+
+    /* Status Banner */
+    .status-banner {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      padding: 1.5rem 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 1.25rem;
+      margin-bottom: 1.5rem;
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+    }
+
+    .status-info {
+      display: flex;
+      align-items: center;
+      gap: 1.25rem;
+    }
+
+    .status-indicator {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background-color: var(--success);
+      box-shadow: 0 0 15px var(--success);
+      transition: all 0.3s ease;
+    }
+
+    .status-text h2 {
+      font-size: 1.4rem;
+      font-weight: 600;
+    }
+
+    .status-text p {
+      color: var(--text-muted);
+      font-size: 0.875rem;
+    }
+
+    .controls {
+      display: flex;
+      gap: 0.75rem;
+      align-items: center;
+    }
+
+    select {
+      background: #334155;
+      color: #fff;
+      border: 1px solid #475569;
+      padding: 0.6rem 0.8rem;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      outline: none;
+      transition: background 0.2s;
+    }
+
+    select:hover {
+      background: #475569;
+    }
+
+    button {
+      background: #334155;
+      color: #fff;
+      border: 1px solid #475569;
+      padding: 0.6rem 1.2rem;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.1s;
+    }
+
+    button:hover {
+      background: #475569;
+    }
+
+    button:active {
+      transform: scale(0.98);
+    }
+
+    /* Grid de Métricas */
+    .metrics-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 14px;
+      padding: 1.25rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .card .title {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      font-weight: 600;
+    }
+
+    .card .value {
+      font-size: 1.8rem;
+      font-weight: 700;
+    }
+
+    .card .unit {
+      font-size: 1rem;
+      font-weight: 400;
+      color: var(--text-muted);
+    }
+
+    .card .subtitle {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    /* Gráfico */
+    .chart-container {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .chart-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+    }
+
+    .chart-header h3 {
+      font-size: 1.1rem;
+      font-weight: 600;
+    }
+
+    .chart-header span {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    canvas {
+      width: 100%;
+      height: 180px;
+      display: block;
+    }
+
+    /* Footer / Logs */
+    .info-footer {
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 0.8rem;
+      line-height: 1.5;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <div class="top-bar">
+      <select id="langSelect" aria-label="Idioma / Language">
+        <option value="pt" selected>🇧🇷 PT</option>
+        <option value="en">🇺🇸 EN</option>
+      </select>
+    </div>
+    <header>
+      <h1 data-i18n="mainTitle">Minha Internet Tá Boa?</h1>
+      <p data-i18n="mainSubtitle">Testes contínuos de latência, oscilação (jitter) e estabilidade</p>
+    </header>
+
+    <div class="status-banner">
+      <div class="status-info">
+        <div id="statusIndicator" class="status-indicator"></div>
+        <div class="status-text">
+          <h2 id="statusTitle" data-i18n="connectingTitle">Conectando...</h2>
+          <p id="statusDescription" data-i18n="connectingDesc">Iniciando medições de rede</p>
+        </div>
+      </div>
+      <div class="controls">
+        <button id="toggleBtn" data-i18n="pauseBtn">Pausar</button>
+      </div>
+    </div>
+
+    <div class="metrics-grid">
+      <div class="card">
+        <span class="title" data-i18n="pingTitle">Ping (Latência)</span>
+        <div class="value" id="pingValue">-- <span class="unit">ms</span></div>
+        <span class="subtitle" id="pingQuality" data-i18n="pingWaiting">Aguardando dados...</span>
+      </div>
+
+      <div class="card">
+        <span class="title" data-i18n="jitterTitle">Jitter (Oscilação)</span>
+        <div class="value" id="jitterValue">-- <span class="unit">ms</span></div>
+        <span class="subtitle" id="jitterQuality" data-i18n="jitterSubtitle">Variação do ping</span>
+      </div>
+
+      <div class="card">
+        <span class="title" data-i18n="lossTitle">Perda / Falhas</span>
+        <div class="value" id="lossValue">0%</div>
+        <span class="subtitle" id="lossCount" data-i18n="lossSubtitle">0 erros de 0 testes</span>
+      </div>
+
+      <div class="card">
+        <span class="title" data-i18n="typeTitle">Tipo / Provedor</span>
+        <div class="value" id="netType" style="font-size: 1.3rem;">--</div>
+        <span class="subtitle" id="netSpeed" data-i18n="netSpeedLoading">Carregando detalhes...</span>
+      </div>
+    </div>
+
+    <div class="chart-container">
+      <div class="chart-header">
+        <h3 data-i18n="chartTitle">Histórico de Latência</h3>
+        <span data-i18n="chartSubtitle">Últimos 30 testes</span>
+      </div>
+      <canvas id="latencyChart" height="180"></canvas>
+    </div>
+
+    <div class="info-footer" data-i18n="footerText">
+      As medições são feitas enviando pequenas requisições com cache desabilitado para servidores Cloudflare.<br>
+      Isso mede o Round Trip Time (RTT) real da sua conexão sem consumir sua franquia de dados.
+    </div>
+  </div>
+
+  <script>
+    // Dicionário de Traduções
+    const translations = {
+      pt: {
+        mainTitle: "Minha Internet Tá Boa?",
+        mainSubtitle: "Testes contínuos de latência, oscilação (jitter) e estabilidade",
+        connectingTitle: "Conectando...",
+        connectingDesc: "Iniciando medições de rede",
+        pauseBtn: "Pausar",
+        resumeBtn: "Retomar",
+        pingTitle: "Ping (Latência)",
+        pingWaiting: "Aguardando dados...",
+        pingQuality1: "Excelente (Ótimo para jogos e chamadas)",
+        pingQuality2: "Boa (Normal para navegação e streaming)",
+        pingQuality3: "Alta latência (Possíveis lentidões)",
+        pingFailed: "Falha no teste",
+        jitterTitle: "Jitter (Oscilação)",
+        jitterSubtitle: "Variação do ping",
+        jitterStable: "Muito estável",
+        jitterModerate: "Estabilidade moderada",
+        jitterUnstable: "Conexão instável (jitter alto)",
+        lossTitle: "Perda / Falhas",
+        lossSubtitle: "erros de testes",
+        typeTitle: "Tipo / Provedor",
+        netSpeedLoading: "Carregando detalhes...",
+        netSpeedOffline: "Sem conexão com a internet",
+        apiLimited: "API de rede limitada",
+        chartTitle: "Histórico de Latência",
+        chartSubtitle: "Últimos 30 testes",
+        footerText: "As medições são feitas enviando pequenas requisições com cache desabilitado para servidores Cloudflare.<br>Isso mede o Round Trip Time (RTT) real da sua conexão sem consumir sua franquia de dados.",
+        statusDisconnectedTitle: "Desconectado",
+        statusDisconnectedDesc: "Você não possui sinal de rede local",
+        statusTimeoutTitle: "Sem Conexão ou Timeout",
+        statusTimeoutDesc: "O servidor não respondeu a tempo",
+        statusExcelTitle: "Conexão Excelente",
+        statusExcelDesc: "Rede rápida e altamente responsiva",
+        statusAcceptTitle: "Conexão Aceitável",
+        statusAcceptDesc: "Latência moderada detectada",
+        statusInstabTitle: "Conexão Instável",
+        statusInstabDesc: "Alta oscilação ou perda de requisições"
+      },
+      en: {
+        mainTitle: "Is My Internet Good?",
+        mainSubtitle: "Continuous latency, jitter, and stability testing",
+        connectingTitle: "Connecting...",
+        connectingDesc: "Starting network measurements",
+        pauseBtn: "Pause",
+        resumeBtn: "Resume",
+        pingTitle: "Ping (Latency)",
+        pingWaiting: "Waiting for data...",
+        pingQuality1: "Excellent (Great for gaming & calls)",
+        pingQuality2: "Good (Normal for browsing & streaming)",
+        pingQuality3: "High latency (Possible slowdowns)",
+        pingFailed: "Test failed",
+        jitterTitle: "Jitter (Variance)",
+        jitterSubtitle: "Ping variation",
+        jitterStable: "Very stable",
+        jitterModerate: "Moderate stability",
+        jitterUnstable: "Unstable connection (high jitter)",
+        lossTitle: "Packet Loss",
+        lossSubtitle: "errors out of tests",
+        typeTitle: "Type / ISP",
+        netSpeedLoading: "Loading details...",
+        netSpeedOffline: "No internet connection",
+        apiLimited: "Limited network API",
+        chartTitle: "Latency History",
+        chartSubtitle: "Last 30 tests",
+        footerText: "Measurements are made by sending small requests with cache disabled to Cloudflare servers.<br>This measures the real Round Trip Time (RTT) of your connection without consuming your data quota.",
+        statusDisconnectedTitle: "Disconnected",
+        statusDisconnectedDesc: "You have no local network signal",
+        statusTimeoutTitle: "No Connection or Timeout",
+        statusTimeoutDesc: "Server did not respond in time",
+        statusExcelTitle: "Excellent Connection",
+        statusExcelDesc: "Fast and highly responsive network",
+        statusAcceptTitle: "Acceptable Connection",
+        statusAcceptDesc: "Moderate latency detected",
+        statusInstabTitle: "Unstable Connection",
+        statusInstabDesc: "High variance or request loss"
+      }
+    };
+
+    let currentLang = 'pt';
+
+    // Configurações de Rede e Estado
+    const PING_ENDPOINT = 'https://cloudflare.com/cdn-cgi/trace';
+    const INTERVAL_MS = 2000;
+    const TIMEOUT_MS = 3000;
+    const MAX_HISTORY = 30;
+
+    let isRunning = true;
+    let timerId = null;
+    let lastPing = null;
+    let history = [];
+    let totalTests = 0;
+    let failedTests = 0;
+
+    function t(key, failed = 0, total = 0) {
+      const dict = translations[currentLang] || translations.pt;
+      if (key === 'lossSubtitle') {
+        return currentLang === 'en' ? `${failed} errors out of ${total} tests` : `${failed} erros de ${total} testes`;
+      }
+      return dict[key] || translations.pt[key] || key;
+    }
+
+    function applyTranslations() {
+      document.querySelectorAll('[data-i18n]').forEach(el => {
+        const key = el.getAttribute('data-i18n');
+        el.innerHTML = t(key);
+      });
+      toggleBtn.innerText = isRunning ? t('pauseBtn') : t('resumeBtn');
+    }
+
+    const langSelect = document.getElementById('langSelect');
+    if (langSelect) {
+      langSelect.addEventListener('change', (e) => {
+        currentLang = e.target.value;
+        applyTranslations();
+        updateUI(lastPing);
+      });
+    }
+
+    // Elementos DOM
+    const statusIndicator = document.getElementById('statusIndicator');
+    const statusTitle = document.getElementById('statusTitle');
+    const statusDescription = document.getElementById('statusDescription');
+    const toggleBtn = document.getElementById('toggleBtn');
+    const pingValue = document.getElementById('pingValue');
+    const pingQuality = document.getElementById('pingQuality');
+    const jitterValue = document.getElementById('jitterValue');
+    const jitterQuality = document.getElementById('jitterQuality');
+    const lossValue = document.getElementById('lossValue');
+    const lossCount = document.getElementById('lossCount');
+    const netType = document.getElementById('netType');
+    const netSpeed = document.getElementById('netSpeed');
+    const canvas = document.getElementById('latencyChart');
+    const ctx = canvas.getContext('2d');
+
+    // Inicializar Canvas responsivo
+    function resizeCanvas() {
+      canvas.width = canvas.parentElement.clientWidth - 48;
+      canvas.height = 180;
+      drawChart();
+    }
+    window.addEventListener('resize', resizeCanvas);
+
+    // Detecção nativa do navegador (Network Information API) e IP/ISP
+    let ispLoaded = false;
+
+    async function updateNetworkApiInfo() {
+      const conn = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+      
+      let typeLabel = 'Online';
+      let speedText = 'Velocidade estimada';
+
+      if (conn) {
+        const rawType = conn.type ? conn.type.toLowerCase() : '';
+        const effective = conn.effectiveType ? conn.effectiveType.toLowerCase() : '';
+
+        // Se for explicitamente cellular na API ou rtt/downlink indicarem dados móveis (ou se o tipo for cellular)
+        if (rawType.includes('wifi') || rawType === 'wireless') {
+          typeLabel = '📡 Wi-Fi';
+        } else if (rawType.includes('ethernet') || rawType === 'ethernet' || rawType === 'wired') {
+          typeLabel = '🔌 Cabo';
+        } else if (rawType.includes('cellular') || rawType === 'cellular' || rawType === 'mobile') {
+          // Se for explicitamente rede móvel/celular
+          let gen = '';
+          if (effective === '4g' || effective === '3g' || effective === '2g') {
+            gen = effective.toUpperCase();
+            if (gen === '4G' && conn.downlink && conn.downlink > 50) {
+              gen = '5G';
+            }
+          } else if (conn.downlink && conn.downlink > 50) {
+            gen = '5G';
+          }
+          
+          typeLabel = gen ? `📱 Celular (${gen})` : '📱 Celular';
+        } else {
+          // No desktop ou navegadores que não informam o tipo exato, mas dão dicas de downlink/rtt
+          if (effective === '4g' && conn.rtt && conn.rtt > 80) {
+            let gen = '4G';
+            if (conn.downlink && conn.downlink > 50) {
+              gen = '5G';
+            }
+            typeLabel = `📱 Celular (${gen})`;
+          } else {
+            typeLabel = '📡 Wi-Fi / Rede';
+          }
+        }
+
+        if (conn.downlink) {
+          speedText = `~${conn.downlink} Mbps | RTT: ${conn.rtt || '--'}ms`;
+        } else {
+          speedText = conn.effectiveType ? `Tipo: ${conn.effectiveType}` : 'Sem estimativa detalhada';
+        }
+      } else {
+        typeLabel = navigator.onLine ? '📡 Wi-Fi / Rede' : '❌ Offline';
+        speedText = 'API de rede limitada';
+      }
+
+      netType.innerText = typeLabel;
+
+      if (!ispLoaded && navigator.onLine) {
+        ispLoaded = true;
+        try {
+          const controller = new AbortController();
+          const timeoutId = setTimeout(() => controller.abort(), 4000);
+          const res = await fetch('https://ipapi.co/json/', { signal: controller.signal });
+          clearTimeout(timeoutId);
+          if (res.ok) {
+            const data = await res.json();
+            const ispName = data.org || data.asn || 'Provedor desconhecido';
+            const cityState = data.city ? `${data.city}/${data.region}` : '';
+            netSpeed.innerText = `${ispName} ${cityState ? '(' + cityState + ')' : ''}`;
+          } else {
+            netSpeed.innerText = speedText;
+          }
+        } catch (e) {
+          netSpeed.innerText = speedText;
+        }
+      } else if (!navigator.onLine) {
+        netSpeed.innerText = 'Sem conexão com a internet';
+      }
+    }
+
+    if (navigator.connection) {
+      navigator.connection.addEventListener('change', updateNetworkApiInfo);
+    }
+    window.addEventListener('online', () => { ispLoaded = false; updateStatus('online'); updateNetworkApiInfo(); });
+    window.addEventListener('offline', () => updateStatus('offline'));
+
+    // Realiza teste de ping
+    async function measurePing() {
+      if (!navigator.onLine) {
+        recordResult(null);
+        return;
+      }
+
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), TIMEOUT_MS);
+      const startTime = performance.now();
+
+      try {
+        // Cache bust para garantir resposta real da rede
+        await fetch(`${PING_ENDPOINT}?t=${Date.now()}`, {
+          method: 'GET',
+          mode: 'no-cors',
+          cache: 'no-store',
+          signal: controller.signal
+        });
+        clearTimeout(timeout);
+        const duration = Math.round(performance.now() - startTime);
+        recordResult(duration);
+      } catch (err) {
+        clearTimeout(timeout);
+        recordResult(null);
+      }
+    }
+
+    // Processa os dados
+    function recordResult(ping) {
+      totalTests++;
+
+      if (ping === null) {
+        failedTests++;
+        history.push({ ping: null, jitter: 0 });
+      } else {
+        const jitter = lastPing !== null ? Math.abs(ping - lastPing) : 0;
+        lastPing = ping;
+        history.push({ ping, jitter });
+      }
+
+      if (history.length > MAX_HISTORY) {
+        history.shift();
+      }
+
+      updateUI(ping);
+      drawChart();
+    }
+
+    // Atualiza a interface
+    function updateUI(currentPing) {
+      updateNetworkApiInfo();
+
+      // Perda de Pacotes
+      const lossRate = ((failedTests / totalTests) * 100).toFixed(1);
+      lossValue.innerText = `${lossRate}%`;
+      lossCount.innerText = t('lossSubtitle', failedTests, totalTests);
+
+      if (currentPing === null) {
+        pingValue.innerHTML = `-- <span class="unit">ms</span>`;
+        pingQuality.innerText = t('pingFailed');
+        updateStatus('danger', t('statusTimeoutTitle'), t('statusTimeoutDesc'));
+        return;
+      }
+
+      // Ping
+      pingValue.innerHTML = `${currentPing} <span class="unit">ms</span>`;
+      if (currentPing < 50) {
+        pingQuality.innerText = t('pingQuality1');
+        pingQuality.style.color = 'var(--success)';
+      } else if (currentPing < 120) {
+        pingQuality.innerText = t('pingQuality2');
+        pingQuality.style.color = 'var(--accent)';
+      } else {
+        pingQuality.innerText = t('pingQuality3');
+        pingQuality.style.color = 'var(--warning)';
+      }
+
+      // Jitter
+      const recentValid = history.filter(h => h.ping !== null);
+      if (recentValid.length > 1) {
+        const currentJitter = recentValid[recentValid.length - 1].jitter;
+        jitterValue.innerHTML = `${currentJitter} <span class="unit">ms</span>`;
+        if (currentJitter <= 10) {
+          jitterQuality.innerText = t('jitterStable');
+        } else if (currentJitter <= 30) {
+          jitterQuality.innerText = t('jitterModerate');
+        } else {
+          jitterQuality.innerText = t('jitterUnstable');
+        }
+      }
+
+      // Status Geral
+      if (currentPing < 80 && lossRate < 3) {
+        updateStatus('success', t('statusExcelTitle'), t('statusExcelDesc'));
+      } else if (currentPing < 150 && lossRate < 8) {
+        updateStatus('warning', t('statusAcceptTitle'), t('statusAcceptDesc'));
+      } else {
+        updateStatus('danger', t('statusInstabTitle'), t('statusInstabDesc'));
+      }
+    }
+
+    function updateStatus(state, title, desc) {
+      if (state === 'offline' || !navigator.onLine) {
+        statusIndicator.style.backgroundColor = 'var(--danger)';
+        statusIndicator.style.boxShadow = '0 0 15px var(--danger)';
+        statusTitle.innerText = t('statusDisconnectedTitle');
+        statusDescription.innerText = t('statusDisconnectedDesc');
+        return;
+      }
+
+      const colors = {
+        success: 'var(--success)',
+        warning: 'var(--warning)',
+        danger: 'var(--danger)'
+      };
+
+      statusIndicator.style.backgroundColor = colors[state] || colors.success;
+      statusIndicator.style.boxShadow = `0 0 15px ${colors[state] || colors.success}`;
+      if (title) statusTitle.innerText = title;
+      if (desc) statusDescription.innerText = desc;
+    }
+
+    // Desenho do Gráfico no Canvas
+    function drawChart() {
+      const w = canvas.width;
+      const h = canvas.height;
+      ctx.clearRect(0, 0, w, h);
+
+      if (history.length < 2) return;
+
+      const pings = history.map(item => item.ping ?? 250);
+      const maxPing = Math.max(100, Math.ceil(Math.max(...pings) * 1.25));
+
+      // Linhas de grade
+      ctx.strokeStyle = '#334155';
+      ctx.lineWidth = 1;
+      for (let i = 1; i <= 3; i++) {
+        const y = (h / 4) * i;
+        ctx.beginPath();
+        ctx.moveTo(0, y);
+        ctx.lineTo(w, y);
+        ctx.stroke();
+
+        ctx.fillStyle = '#64748b';
+        ctx.font = '10px monospace';
+        const val = Math.round(maxPing - (maxPing / 4) * i);
+        ctx.fillText(`${val}ms`, 8, y - 4);
+      }
+
+      // Linha do gráfico
+      const step = w / (MAX_HISTORY - 1);
+      ctx.beginPath();
+      history.forEach((item, index) => {
+        const ping = item.ping !== null ? item.ping : maxPing;
+        const x = index * step;
+        const y = h - (ping / maxPing) * h;
+
+        if (index === 0) {
+          ctx.moveTo(x, y);
+        } else {
+          ctx.lineTo(x, y);
+        }
+      });
+
+      ctx.strokeStyle = '#38bdf8';
+      ctx.lineWidth = 2.5;
+      ctx.stroke();
+
+      // Preenchimento gradiente abaixo da linha
+      const gradient = ctx.createLinearGradient(0, 0, 0, h);
+      gradient.addColorStop(0, 'rgba(56, 189, 248, 0.25)');
+      gradient.addColorStop(1, 'rgba(56, 189, 248, 0.0)');
+
+      ctx.lineTo((history.length - 1) * step, h);
+      ctx.lineTo(0, h);
+      ctx.closePath();
+      ctx.fillStyle = gradient;
+      ctx.fill();
+
+      // Pontos nos nós
+      history.forEach((item, index) => {
+        const ping = item.ping !== null ? item.ping : maxPing;
+        const x = index * step;
+        const y = h - (ping / maxPing) * h;
+
+        ctx.beginPath();
+        ctx.arc(x, y, item.ping === null ? 5 : 3.5, 0, Math.PI * 2);
+        ctx.fillStyle = item.ping === null ? '#ef4444' : '#38bdf8';
+        ctx.fill();
+      });
+    }
+
+    // Botão Iniciar / Pausar
+    toggleBtn.addEventListener('click', () => {
+      isRunning = !isRunning;
+      toggleBtn.innerText = isRunning ? t('pauseBtn') : t('resumeBtn');
+      if (isRunning) {
+        measurePing();
+        timerId = setInterval(measurePing, INTERVAL_MS);
+      } else {
+        clearInterval(timerId);
+      }
+    });
+
+    // Função para reiniciar / limpar o estado se necessário
+    // Iniciar
+    resizeCanvas();
+    updateNetworkApiInfo();
+    measurePing();
+    timerId = setInterval(measurePing, INTERVAL_MS);
+  </script>
+</body>
+</html>
