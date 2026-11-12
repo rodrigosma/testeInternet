@@ -302,7 +302,7 @@
     <div class="info-footer" data-i18n="footerText">
       As medições são feitas enviando pequenas requisições com cache desabilitado para servidores Cloudflare.<br>
       Isso mede o Round Trip Time (RTT) real da sua conexão sem consumir sua franquia de dados.
-      <br><span style="color: var(--accent); font-weight: 600; margin-top: 0.5rem; display: inline-block;">Versão: v1.6.1</span>
+      <br><span style="color: var(--accent); font-weight: 600; margin-top: 0.5rem; display: inline-block;">Versão: v1.6.2</span>
     </div>
   </div>
 
@@ -473,13 +473,13 @@
         if (rawType.includes('wifi') || rawType === 'wireless') {
           typeLabel = '📡 Wi-Fi';
         } else if (rawType.includes('ethernet') || rawType === 'ethernet' || rawType === 'wired') {
-          typeLabel = '🔌 Cabo (Ethernet)';
+          typeLabel = '🛜 Cabo (Ethernet)';
         } else if (rawType.includes('cellular') || rawType === 'cellular' || rawType === 'mobile') {
           typeLabel = '📱 Celular';
         } else {
           // Se for desktop (ou userAgent não mobile), a API do navegador costuma retornar effectiveType '4g' por padrão para qualquer conexão boa.
           if (!isMobileDevice) {
-            typeLabel = '🔌 Cabo / Rede';
+            typeLabel = '🛜 Cabo / Rede';
           } else {
             // Em dispositivos móveis
             let gen = '4G';
@@ -500,7 +500,7 @@
           speedText = conn.effectiveType ? `Tipo: ${conn.effectiveType}` : 'Sem estimativa detalhada';
         }
       } else {
-        typeLabel = navigator.onLine ? '🔌 Cabo / Rede' : '❌ Offline';
+        typeLabel = navigator.onLine ? '🛜 Cabo / Rede' : '❌ Offline';
         speedText = 'API de rede limitada';
       }
 
