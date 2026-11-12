@@ -302,12 +302,12 @@
     <div class="info-footer" data-i18n="footerText">
       As medições são feitas enviando pequenas requisições com cache desabilitado para servidores Cloudflare.<br>
       Isso mede o Round Trip Time (RTT) real da sua conexão sem consumir sua franquia de dados.
-      <br><span style="color: var(--accent); font-weight: 600; margin-top: 0.5rem; display: inline-block;">Versão: v1.6.0</span>
+      <br><span style="color: var(--accent); font-weight: 600; margin-top: 0.5rem; display: inline-block;">Versão: v1.6.1</span>
     </div>
   </div>
 
   <script>
-    console.log("Minha Internet Tá Boa? - Versão: v1.6.0 carregada.");
+    console.log("Minha Internet Tá Boa? - Versão: v1.6.1 carregada.");
 
     // Dicionário de Traduções
     const translations = {
@@ -462,38 +462,35 @@
       let typeLabel = 'Online';
       let speedText = 'Velocidade estimada';
 
+      // Se estiver no computador (sem type mobile/cellular óbvio), ou se o usuário estiver via cabo/wi-fi,
+      // vamos dar prioridade à detecção de desktop vs mobile e evitar falsos positivos do effectiveType '4g' no desktop Chrome/Edge.
+      const isMobileDevice = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+
       if (conn) {
         const rawType = conn.type ? conn.type.toLowerCase() : '';
         const effective = conn.effectiveType ? conn.effectiveType.toLowerCase() : '';
 
-        // Se for explicitamente cellular na API ou rtt/downlink indicarem dados móveis (ou se o tipo for cellular)
         if (rawType.includes('wifi') || rawType === 'wireless') {
           typeLabel = '📡 Wi-Fi';
         } else if (rawType.includes('ethernet') || rawType === 'ethernet' || rawType === 'wired') {
-          typeLabel = '🔌 Cabo';
+          typeLabel = '🔌 Cabo (Ethernet)';
         } else if (rawType.includes('cellular') || rawType === 'cellular' || rawType === 'mobile') {
-          // Se for explicitamente rede móvel/celular
-          let gen = '';
-          if (effective === '4g' || effective === '3g' || effective === '2g') {
-            gen = effective.toUpperCase();
-            if (gen === '4G' && conn.downlink && conn.downlink > 50) {
-              gen = '5G';
-            }
-          } else if (conn.downlink && conn.downlink > 50) {
-            gen = '5G';
-          }
-          
-          typeLabel = gen ? `📱 Celular (${gen})` : '📱 Celular';
+          typeLabel = '📱 Celular';
         } else {
-          // No desktop ou navegadores que não informam o tipo exato, mas dão dicas de downlink/rtt
-          if (effective === '4g' && conn.rtt && conn.rtt > 80) {
+          // Se for desktop (ou userAgent não mobile), a API do navegador costuma retornar effectiveType '4g' por padrão para qualquer conexão boa.
+          if (!isMobileDevice) {
+            typeLabel = '🔌 Cabo / Rede';
+          } else {
+            // Em dispositivos móveis
             let gen = '4G';
-            if (conn.downlink && conn.downlink > 50) {
+            if (effective === '5g' || (conn.downlink && conn.downlink > 50)) {
               gen = '5G';
+            } else if (effective === '3g') {
+              gen = '3G';
+            } else if (effective === '2g') {
+              gen = '2G';
             }
             typeLabel = `📱 Celular (${gen})`;
-          } else {
-            typeLabel = '📡 Wi-Fi / Rede';
           }
         }
 
@@ -503,7 +500,7 @@
           speedText = conn.effectiveType ? `Tipo: ${conn.effectiveType}` : 'Sem estimativa detalhada';
         }
       } else {
-        typeLabel = navigator.onLine ? '📡 Wi-Fi / Rede' : '❌ Offline';
+        typeLabel = navigator.onLine ? '🔌 Cabo / Rede' : '❌ Offline';
         speedText = 'API de rede limitada';
       }
 
