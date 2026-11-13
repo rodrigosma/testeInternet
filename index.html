@@ -740,6 +740,47 @@
       }
     });
 
+    // Implementação Exportar CSV
+    document.getElementById('exportBtn').addEventListener('click', () => {
+      // Coleta dos dados atuais da interface
+      const statusAtual = {
+        ping: document.getElementById('pingValue').innerText.replace(/\s/g, ''),
+        jitter: document.getElementById('jitterValue').innerText.replace(/\s/g, ''),
+        perda: document.getElementById('lossValue').innerText,
+        provedor: document.getElementById('netSpeed').innerText,
+        tipo: document.getElementById('netType').innerText
+      };
+
+      // Construção do CSV estruturado (Estilo Ficha)
+      const rows = [
+        ['"MINHA INTERNET TA BOA? - RELATORIO"'],
+        [],
+        ['"DADOS DO MOMENTO"'],
+        ['"Tipo/Provedor"', `"${statusAtual.tipo} - ${statusAtual.provedor}"`],
+        ['"Ping"', `"${statusAtual.ping}"`],
+        ['"Jitter"', `"${statusAtual.jitter}"`],
+        ['"Perda de Pacotes"', `"${statusAtual.perda}"`],
+        [],
+        ['"HISTORICO DETALHADO (Ultimos 30 testes)"'],
+        ['"Data/Hora"', '"Ping (ms)"', '"Jitter (ms)"'],
+        ...history.map(item => [
+          `"${new Date().toISOString()}"`,
+          item.ping !== null ? item.ping : '"TIMEOUT"',
+          item.jitter
+        ])
+      ];
+
+      const csvContent = "\ufeff" + rows.map(e => e.join(',')).join('\n'); // \ufeff para forçar UTF-8 no Excel
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', `relatorio_internet_${new Date().getTime()}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    });
+
     // Função para reiniciar / limpar o estado se necessário
     // Iniciar
     resizeCanvas();
