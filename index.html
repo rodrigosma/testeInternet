@@ -194,6 +194,35 @@
       color: var(--text-muted);
     }
 
+    .help-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 14px;
+      padding: 1.25rem;
+      margin-bottom: 1.5rem;
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      line-height: 1.6;
+    }
+
+    .help-card h3 {
+      color: var(--text);
+      font-size: 1rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .help-card ul {
+      padding-left: 1.25rem;
+    }
+
+    .help-card li + li {
+      margin-top: 0.25rem;
+    }
+
+    .help-card strong {
+      color: var(--text);
+    }
+
     /* Gráfico */
     .chart-container {
       background: var(--card-bg);
@@ -246,7 +275,7 @@
     </div>
     <header>
       <h1 data-i18n="mainTitle">Minha Internet Tá Boa?</h1>
-      <p data-i18n="mainSubtitle">Testes contínuos de latência, oscilação (jitter) e estabilidade</p>
+      <p data-i18n="mainSubtitle">Teste de resposta e estabilidade (não mede velocidade de download ou upload)</p>
     </header>
 
     <div class="status-banner">
@@ -264,19 +293,19 @@
 
     <div class="metrics-grid">
       <div class="card">
-        <span class="title" data-i18n="pingTitle">Ping (Latência)</span>
+        <span class="title" data-i18n="pingTitle">Tempo de resposta (ping)</span>
         <div class="value" id="pingValue">-- <span class="unit">ms</span></div>
         <span class="subtitle" id="pingQuality" data-i18n="pingWaiting">Aguardando dados...</span>
       </div>
 
       <div class="card">
-        <span class="title" data-i18n="jitterTitle">Jitter (Oscilação)</span>
+        <span class="title" data-i18n="jitterTitle">Variação da resposta (jitter)</span>
         <div class="value" id="jitterValue">-- <span class="unit">ms</span></div>
-        <span class="subtitle" id="jitterQuality" data-i18n="jitterSubtitle">Variação do ping</span>
+        <span class="subtitle" id="jitterQuality" data-i18n="jitterSubtitle">Quanto a resposta varia; menor é mais estável</span>
       </div>
 
       <div class="card">
-        <span class="title" data-i18n="lossTitle">Perda / Falhas</span>
+        <span class="title" data-i18n="lossTitle">Falhas nos testes</span>
         <div class="value" id="lossValue">0%</div>
         <span class="subtitle" id="lossCount" data-i18n="lossSubtitle">0 erros de 0 testes</span>
       </div>
@@ -288,104 +317,183 @@
       </div>
     </div>
 
+    <section class="help-card" aria-labelledby="testGuideTitle">
+      <h3 id="testGuideTitle" data-i18n="testGuideTitle">Como entender este teste</h3>
+      <p data-i18n="testGuideIntro">Ele verifica se seu aparelho recebe respostas rápidas e estáveis de um servidor de teste.</p>
+      <ul>
+        <li data-i18n="guidePing"><strong>Ping:</strong> tempo para a resposta chegar. Em geral, quanto menor, melhor.</li>
+        <li data-i18n="guideJitter"><strong>Variação:</strong> quanto o tempo de resposta muda entre testes. Menor significa mais estabilidade.</li>
+        <li data-i18n="guideFailures"><strong>Falhas:</strong> testes em que o servidor não respondeu a tempo.</li>
+      </ul>
+      <p data-i18n="guideSpeed"><strong>Importante:</strong> este teste não mede velocidade de download ou upload e não garante o desempenho de todos os sites e aplicativos.</p>
+    </section>
+
     <div class="chart-container">
       <div class="chart-header">
         <h3 data-i18n="chartTitle">Histórico de Latência</h3>
         <span data-i18n="chartSubtitle">Últimos 30 testes</span>
       </div>
       <canvas id="latencyChart" height="180"></canvas>
-      <div style="margin-top: 1rem; display: flex; justify-content: flex-end;">
-        <button id="exportBtn" style="background: #0284c7; border-color: #0369a1; font-size: 0.85rem; padding: 0.5rem 1rem;" data-i18n="exportBtn">📥 Exportar Relatório (CSV)</button>
+      <div style="margin-top: 1rem; display: flex; justify-content: flex-end; flex-wrap: wrap; gap: 0.5rem;">
+        <button id="reportBtn" style="background: #059669; border-color: #047857; font-size: 0.85rem; padding: 0.5rem 1rem;" data-i18n="reportBtn">📄 Gerar relatório em PDF</button>
+        <button id="exportBtn" style="background: #0284c7; border-color: #0369a1; font-size: 0.85rem; padding: 0.5rem 1rem;" data-i18n="exportBtn">📊 Exportar dados (CSV)</button>
       </div>
     </div>
 
     <div class="info-footer" data-i18n="footerText">
-      As medições são feitas enviando pequenas requisições com cache desabilitado para servidores Cloudflare.<br>
-      Isso mede o Round Trip Time (RTT) real da sua conexão sem consumir sua franquia de dados.
-      <br><span style="color: var(--accent); font-weight: 600; margin-top: 0.5rem; display: inline-block;">Versão: v1.6.3</span>
+      O teste envia pequenas requisições a um servidor da Cloudflare para medir o tempo de resposta e usa poucos dados.
+      <br><span style="color: var(--accent); font-weight: 600; margin-top: 0.5rem; display: inline-block;">Versão: v1.7.0</span>
     </div>
   </div>
 
   <script>
-    console.log("Minha Internet Tá Boa? - Versão: v1.6.1 carregada.");
+    console.log("Minha Internet Tá Boa? - Versão: v1.7.0 carregada.");
 
     // Dicionário de Traduções
     const translations = {
       pt: {
         mainTitle: "Minha Internet Tá Boa?",
-        mainSubtitle: "Testes contínuos de latência, oscilação (jitter) e estabilidade",
+        mainSubtitle: "Teste de resposta e estabilidade (não mede velocidade de download ou upload)",
         connectingTitle: "Conectando...",
         connectingDesc: "Iniciando medições de rede",
         pauseBtn: "Pausar",
         resumeBtn: "Retomar",
-        pingTitle: "Ping (Latência)",
+        pingTitle: "Tempo de resposta (ping)",
         pingWaiting: "Aguardando dados...",
-        pingQuality1: "Excelente (Ótimo para jogos e chamadas)",
-        pingQuality2: "Boa (Normal para navegação e streaming)",
-        pingQuality3: "Alta latência (Possíveis lentidões)",
+        pingQuality1: "Resposta rápida",
+        pingQuality2: "Resposta moderada",
+        pingQuality3: "Resposta lenta (pode causar atrasos)",
         pingFailed: "Falha no teste",
-        jitterTitle: "Jitter (Oscilação)",
-        jitterSubtitle: "Variação do ping",
+        jitterTitle: "Variação da resposta (jitter)",
+        jitterSubtitle: "Quanto a resposta varia; menor é mais estável",
         jitterStable: "Muito estável",
         jitterModerate: "Estabilidade moderada",
         jitterUnstable: "Conexão instável (jitter alto)",
-        lossTitle: "Perda / Falhas",
+        lossTitle: "Falhas nos testes",
         lossSubtitle: "erros de testes",
+        testGuideTitle: "Como entender este teste",
+        testGuideIntro: "Ele verifica se seu aparelho recebe respostas rápidas e estáveis de um servidor de teste.",
+        guidePing: "<strong>Ping:</strong> tempo para a resposta chegar. Em geral, quanto menor, melhor.",
+        guideJitter: "<strong>Variação:</strong> quanto o tempo de resposta muda entre testes. Menor significa mais estabilidade.",
+        guideFailures: "<strong>Falhas:</strong> testes em que o servidor não respondeu a tempo.",
+        guideSpeed: "<strong>Importante:</strong> este teste não mede velocidade de download ou upload e não garante o desempenho de todos os sites e aplicativos.",
         typeTitle: "Tipo / Provedor",
         netSpeedLoading: "Carregando detalhes...",
         netSpeedOffline: "Sem conexão com a internet",
         apiLimited: "API de rede limitada",
         chartTitle: "Histórico de Latência",
         chartSubtitle: "Últimos 30 testes",
-        footerText: "As medições são feitas enviando pequenas requisições com cache desabilitado para servidores Cloudflare.<br>Isso mede o Round Trip Time (RTT) real da sua conexão sem consumir sua franquia de dados.",
+        reportBtn: "📄 Gerar relatório em PDF",
+        exportBtn: "📊 Exportar dados (CSV)",
+        reportTitle: "Relatório da conexão",
+        reportIntro: "Resumo das medições de resposta e estabilidade feitas neste navegador.",
+        reportPrintTip: "Na janela de impressão, escolha “Salvar como PDF” para guardar o relatório.",
+        reportPrintError: "Não foi possível abrir a impressão neste navegador. Tente usar outro navegador.",
+        reportGenerated: "Relatório gerado em",
+        reportSummary: "Resumo do teste",
+        reportStatus: "Resultado",
+        reportStatusDetails: "O que isso significa",
+        reportMetrics: "Medições atuais",
+        reportPing: "Tempo de resposta (ping)",
+        reportJitter: "Variação da resposta (jitter)",
+        reportFailures: "Falhas nos testes",
+        reportNetworkType: "Tipo de conexão detectado",
+        reportProvider: "Provedor detectado",
+        reportHistory: "Histórico recente",
+        reportNumber: "Teste",
+        reportDateTime: "Data e hora",
+        reportResponse: "Resposta (ms)",
+        reportVariation: "Variação (ms)",
+        reportReading: "Leitura",
+        reportFast: "Resposta rápida",
+        reportModerate: "Resposta moderada",
+        reportSlow: "Resposta lenta",
+        reportFailed: "Sem resposta",
+        reportNoData: "Ainda não há medições para mostrar.",
+        reportLimitNote: "Este teste avalia o tempo de resposta a um servidor da Cloudflare. Ele não mede a velocidade de download ou upload e não representa necessariamente o desempenho de todos os sites e aplicativos.",
+        footerText: "O teste envia pequenas requisições a um servidor da Cloudflare para medir o tempo de resposta e usa poucos dados.",
         statusDisconnectedTitle: "Desconectado",
         statusDisconnectedDesc: "Você não possui sinal de rede local",
         statusTimeoutTitle: "Sem Conexão ou Timeout",
         statusTimeoutDesc: "O servidor não respondeu a tempo",
-        statusExcelTitle: "Conexão Excelente",
-        statusExcelDesc: "Rede rápida e altamente responsiva",
-        statusAcceptTitle: "Conexão Aceitável",
-        statusAcceptDesc: "Latência moderada detectada",
-        statusInstabTitle: "Conexão Instável",
-        statusInstabDesc: "Alta oscilação ou perda de requisições"
+        statusExcelTitle: "Resposta excelente",
+        statusExcelDesc: "Respostas rápidas e poucas falhas neste teste",
+        statusAcceptTitle: "Resposta aceitável",
+        statusAcceptDesc: "Respostas um pouco lentas ou algumas falhas",
+        statusInstabTitle: "Resposta instável",
+        statusInstabDesc: "Respostas lentas ou falhas neste teste"
       },
       en: {
         mainTitle: "Is My Internet Good?",
-        mainSubtitle: "Continuous latency, jitter, and stability testing",
+        mainSubtitle: "Response and stability test (does not measure download or upload speed)",
         connectingTitle: "Connecting...",
         connectingDesc: "Starting network measurements",
         pauseBtn: "Pause",
         resumeBtn: "Resume",
-        pingTitle: "Ping (Latency)",
+        pingTitle: "Response time (ping)",
         pingWaiting: "Waiting for data...",
-        pingQuality1: "Excellent (Great for gaming & calls)",
-        pingQuality2: "Good (Normal for browsing & streaming)",
-        pingQuality3: "High latency (Possible slowdowns)",
+        pingQuality1: "Fast response",
+        pingQuality2: "Moderate response",
+        pingQuality3: "Slow response (may cause delays)",
         pingFailed: "Test failed",
-        jitterTitle: "Jitter (Variance)",
-        jitterSubtitle: "Ping variation",
+        jitterTitle: "Response variation (jitter)",
+        jitterSubtitle: "How much response time varies; lower is steadier",
         jitterStable: "Very stable",
         jitterModerate: "Moderate stability",
         jitterUnstable: "Unstable connection (high jitter)",
-        lossTitle: "Packet Loss",
+        lossTitle: "Test failures",
         lossSubtitle: "errors out of tests",
+        testGuideTitle: "Understanding this test",
+        testGuideIntro: "It checks whether your device gets quick, consistent responses from a test server.",
+        guidePing: "<strong>Ping:</strong> how long a response takes. Generally, lower is better.",
+        guideJitter: "<strong>Variation:</strong> how much response time changes between tests. Lower means a steadier connection.",
+        guideFailures: "<strong>Failures:</strong> tests where the server did not respond in time.",
+        guideSpeed: "<strong>Important:</strong> this test does not measure download or upload speed and cannot guarantee how every site or app will perform.",
         typeTitle: "Type / ISP",
         netSpeedLoading: "Loading details...",
         netSpeedOffline: "No internet connection",
         apiLimited: "Limited network API",
         chartTitle: "Latency History",
         chartSubtitle: "Last 30 tests",
-        footerText: "Measurements are made by sending small requests with cache disabled to Cloudflare servers.<br>This measures the real Round Trip Time (RTT) of your connection without consuming your data quota.",
+        reportBtn: "📄 Generate PDF report",
+        exportBtn: "📊 Export data (CSV)",
+        reportTitle: "Connection report",
+        reportIntro: "Summary of response-time and stability measurements made in this browser.",
+        reportPrintTip: "In the print window, choose “Save as PDF” to save the report.",
+        reportPrintError: "Could not open printing in this browser. Please try another browser.",
+        reportGenerated: "Report generated",
+        reportSummary: "Test summary",
+        reportStatus: "Result",
+        reportStatusDetails: "What this means",
+        reportMetrics: "Current measurements",
+        reportPing: "Response time (ping)",
+        reportJitter: "Response variation (jitter)",
+        reportFailures: "Test failures",
+        reportNetworkType: "Detected connection type",
+        reportProvider: "Detected provider",
+        reportHistory: "Recent history",
+        reportNumber: "Test",
+        reportDateTime: "Date and time",
+        reportResponse: "Response (ms)",
+        reportVariation: "Variation (ms)",
+        reportReading: "Reading",
+        reportFast: "Fast response",
+        reportModerate: "Moderate response",
+        reportSlow: "Slow response",
+        reportFailed: "No response",
+        reportNoData: "There are no measurements to show yet.",
+        reportLimitNote: "This test measures response time to a Cloudflare server. It does not measure download or upload speed and may not represent performance on every website or app.",
+        footerText: "The test sends small requests to a Cloudflare server to measure response time and uses little data.",
         statusDisconnectedTitle: "Disconnected",
         statusDisconnectedDesc: "You have no local network signal",
         statusTimeoutTitle: "No Connection or Timeout",
         statusTimeoutDesc: "Server did not respond in time",
-        statusExcelTitle: "Excellent Connection",
-        statusExcelDesc: "Fast and highly responsive network",
-        statusAcceptTitle: "Acceptable Connection",
-        statusAcceptDesc: "Moderate latency detected",
-        statusInstabTitle: "Unstable Connection",
-        statusInstabDesc: "High variance or request loss"
+        statusExcelTitle: "Excellent response",
+        statusExcelDesc: "Quick responses and few failures in this test",
+        statusAcceptTitle: "Acceptable response",
+        statusAcceptDesc: "Somewhat slow responses or a few failures",
+        statusInstabTitle: "Unstable response",
+        statusInstabDesc: "Slow responses or failures in this test"
       }
     };
 
@@ -566,14 +674,15 @@
     // Processa os dados
     function recordResult(ping) {
       totalTests++;
+      const timestamp = new Date();
 
       if (ping === null) {
         failedTests++;
-        history.push({ ping: null, jitter: 0 });
+        history.push({ ping: null, jitter: 0, timestamp });
       } else {
         const jitter = lastPing !== null ? Math.abs(ping - lastPing) : 0;
         lastPing = ping;
-        history.push({ ping, jitter });
+        history.push({ ping, jitter, timestamp });
       }
 
       if (history.length > MAX_HISTORY) {
@@ -740,45 +849,206 @@
       }
     });
 
-    // Implementação Exportar CSV
-    document.getElementById('exportBtn').addEventListener('click', () => {
-      // Coleta dos dados atuais da interface
-      const statusAtual = {
-        ping: document.getElementById('pingValue').innerText.replace(/\s/g, ''),
-        jitter: document.getElementById('jitterValue').innerText.replace(/\s/g, ''),
-        perda: document.getElementById('lossValue').innerText,
-        provedor: document.getElementById('netSpeed').innerText,
-        tipo: document.getElementById('netType').innerText
-      };
+    function escapeHtml(value) {
+      return String(value).replace(/[&<>"']/g, char => ({
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#39;'
+      })[char]);
+    }
 
-      // Construção do CSV estruturado (Estilo Ficha)
-      const rows = [
-        ['"MINHA INTERNET TA BOA? - RELATORIO"'],
-        [],
-        ['"DADOS DO MOMENTO"'],
-        ['"Tipo/Provedor"', `"${statusAtual.tipo} - ${statusAtual.provedor}"`],
-        ['"Ping"', `"${statusAtual.ping}"`],
-        ['"Jitter"', `"${statusAtual.jitter}"`],
-        ['"Perda de Pacotes"', `"${statusAtual.perda}"`],
-        [],
-        ['"HISTORICO DETALHADO (Ultimos 30 testes)"'],
-        ['"Data/Hora"', '"Ping (ms)"', '"Jitter (ms)"'],
-        ...history.map(item => [
-          `"${new Date().toISOString()}"`,
-          item.ping !== null ? item.ping : '"TIMEOUT"',
-          item.jitter
-        ])
-      ];
-
-      const csvContent = "\ufeff" + rows.map(e => e.join(',')).join('\n'); // \ufeff para forçar UTF-8 no Excel
-      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    function downloadFile(content, mimeType, fileName) {
+      const blob = new Blob([content], { type: mimeType });
       const url = URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.href = url;
-      link.setAttribute('download', `relatorio_internet_${new Date().getTime()}.csv`);
+      link.download = fileName;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+    }
+
+    function getReportData() {
+      return {
+        ping: document.getElementById('pingValue').innerText.replace(/\s+/g, ' ').trim(),
+        jitter: document.getElementById('jitterValue').innerText.replace(/\s+/g, ' ').trim(),
+        failures: `${lossValue.innerText} (${lossCount.innerText})`,
+        provider: netSpeed.innerText,
+        type: netType.innerText,
+        status: statusTitle.innerText,
+        statusDetails: statusDescription.innerText
+      };
+    }
+
+    function getReading(ping) {
+      if (ping === null) return t('reportFailed');
+      if (ping < 50) return t('reportFast');
+      if (ping < 120) return t('reportModerate');
+      return t('reportSlow');
+    }
+
+    document.getElementById('reportBtn').addEventListener('click', () => {
+      const reportData = getReportData();
+      const generatedAt = new Date();
+      const locale = currentLang === 'en' ? 'en-US' : 'pt-BR';
+      const statusTone = reportData.status === t('statusExcelTitle')
+        ? 'good'
+        : reportData.status === t('statusAcceptTitle') ? 'warning' : 'bad';
+      const historyRows = history.length
+        ? history.map((item, index) => `
+          <tr>
+            <td>${index + 1}</td>
+            <td>${escapeHtml(item.timestamp.toLocaleString(locale))}</td>
+            <td>${item.ping === null ? '—' : item.ping}</td>
+            <td>${item.jitter}</td>
+            <td>${escapeHtml(getReading(item.ping))}</td>
+          </tr>`).join('')
+        : `<tr><td class="empty" colspan="5">${escapeHtml(t('reportNoData'))}</td></tr>`;
+
+      const reportHtml = `<!DOCTYPE html>
+<html lang="${currentLang === 'en' ? 'en' : 'pt-BR'}">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>${escapeHtml(t('reportTitle'))} - ${escapeHtml(generatedAt.toLocaleDateString(locale))}</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; padding: 32px 16px; background: #eef2f7; color: #172033; font: 15px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+    main { max-width: 900px; margin: auto; overflow: hidden; background: #fff; border: 1px solid #dce3ed; border-radius: 20px; box-shadow: 0 16px 40px rgba(15, 23, 42, .12); }
+    header { padding: 32px; color: #fff; background: linear-gradient(135deg, #0f172a, #0369a1); }
+    header p { margin: 0; color: #dbeafe; }
+    header h1 { margin: 4px 0 8px; font-size: clamp(1.7rem, 5vw, 2.3rem); }
+    .content { padding: 28px 32px 32px; }
+    .meta, .note, .tip { color: #526176; font-size: .9rem; }
+    .summary { margin: 22px 0; padding: 20px; border: 1px solid; border-radius: 14px; }
+    .summary h2, section h2 { margin: 0 0 12px; font-size: 1.15rem; }
+    .summary p { margin: 6px 0 0; }
+    .good { color: #065f46; background: #ecfdf5; border-color: #a7f3d0; }
+    .warning { color: #92400e; background: #fffbeb; border-color: #fde68a; }
+    .bad { color: #991b1b; background: #fef2f2; border-color: #fecaca; }
+    .metrics { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; margin: 16px 0 28px; }
+    .metric { padding: 16px; border: 1px solid #dce3ed; border-radius: 12px; background: #f8fafc; }
+    .metric span { display: block; color: #526176; font-size: .82rem; }
+    .metric strong { display: block; margin-top: 5px; font-size: 1.2rem; overflow-wrap: anywhere; }
+    section { margin-top: 24px; }
+    .table-wrap { overflow-x: auto; border: 1px solid #dce3ed; border-radius: 12px; }
+    table { width: 100%; border-collapse: collapse; font-size: .9rem; }
+    th, td { padding: 11px 12px; text-align: left; border-bottom: 1px solid #e5eaf1; white-space: nowrap; }
+    th { color: #334155; background: #f1f5f9; font-size: .8rem; }
+    tbody tr:last-child td { border-bottom: 0; }
+    .empty { color: #64748b; text-align: center; white-space: normal; }
+    .note { margin-top: 22px; padding: 14px 16px; border-left: 4px solid #0284c7; background: #f0f9ff; border-radius: 6px; }
+    .tip { margin-top: 18px; text-align: center; }
+    @media (max-width: 600px) { body { padding: 12px; } header, .content { padding: 22px 18px; } }
+    @media print { body { padding: 0; background: #fff; } main { border: 0; border-radius: 0; box-shadow: none; } header { print-color-adjust: exact; -webkit-print-color-adjust: exact; } .summary, .metric, th, .note { print-color-adjust: exact; -webkit-print-color-adjust: exact; } }
+  </style>
+</head>
+<body>
+  <main>
+    <header>
+      <p>${escapeHtml(t('reportGenerated'))}: ${escapeHtml(generatedAt.toLocaleString(locale))}</p>
+      <h1>${escapeHtml(t('reportTitle'))}</h1>
+      <p>${escapeHtml(t('reportIntro'))}</p>
+    </header>
+    <div class="content">
+      <section class="summary ${statusTone}">
+        <h2>${escapeHtml(t('reportSummary'))}: ${escapeHtml(reportData.status)}</h2>
+        <p>${escapeHtml(reportData.statusDetails)}</p>
+      </section>
+      <section>
+        <h2>${escapeHtml(t('reportMetrics'))}</h2>
+        <div class="metrics">
+          <div class="metric"><span>${escapeHtml(t('reportPing'))}</span><strong>${escapeHtml(reportData.ping)}</strong></div>
+          <div class="metric"><span>${escapeHtml(t('reportJitter'))}</span><strong>${escapeHtml(reportData.jitter)}</strong></div>
+          <div class="metric"><span>${escapeHtml(t('reportFailures'))}</span><strong>${escapeHtml(reportData.failures)}</strong></div>
+          <div class="metric"><span>${escapeHtml(t('reportNetworkType'))}</span><strong>${escapeHtml(reportData.type)}</strong></div>
+          <div class="metric"><span>${escapeHtml(t('reportProvider'))}</span><strong>${escapeHtml(reportData.provider)}</strong></div>
+        </div>
+      </section>
+      <section>
+        <h2>${escapeHtml(t('reportHistory'))}</h2>
+        <div class="table-wrap">
+          <table>
+            <thead><tr>
+              <th>${escapeHtml(t('reportNumber'))}</th>
+              <th>${escapeHtml(t('reportDateTime'))}</th>
+              <th>${escapeHtml(t('reportResponse'))}</th>
+              <th>${escapeHtml(t('reportVariation'))}</th>
+              <th>${escapeHtml(t('reportReading'))}</th>
+            </tr></thead>
+            <tbody>${historyRows}</tbody>
+          </table>
+        </div>
+      </section>
+      <p class="note">${escapeHtml(t('reportLimitNote'))}</p>
+      <p class="tip">${escapeHtml(t('reportPrintTip'))}</p>
+    </div>
+  </main>
+</body>
+</html>`;
+
+      const printFrame = document.createElement('iframe');
+      printFrame.title = t('reportTitle');
+      printFrame.setAttribute('aria-hidden', 'true');
+      printFrame.style.cssText = 'position:fixed;left:-10000px;top:0;width:100vw;height:100vh;border:0;';
+      printFrame.addEventListener('load', () => {
+        const printWindow = printFrame.contentWindow;
+        if (!printWindow || typeof printWindow.print !== 'function') {
+          printFrame.remove();
+          alert(t('reportPrintError'));
+          return;
+        }
+
+        printWindow.addEventListener('afterprint', () => printFrame.remove(), { once: true });
+        printWindow.focus();
+        try {
+          printWindow.print();
+        } catch (error) {
+          printFrame.remove();
+          alert(t('reportPrintError'));
+          console.error('Unable to open the report print dialog.', error);
+        }
+      }, { once: true });
+      printFrame.srcdoc = reportHtml;
+      document.body.appendChild(printFrame);
+    });
+
+    document.getElementById('exportBtn').addEventListener('click', () => {
+      const reportData = getReportData();
+      const generatedAt = new Date();
+      const locale = currentLang === 'en' ? 'en-US' : 'pt-BR';
+      const csvEscape = value => `"${String(value).replace(/"/g, '""')}"`;
+      const rows = [
+        [t('reportTitle')],
+        [],
+        [t('reportGenerated'), generatedAt.toLocaleString(locale)],
+        [],
+        [t('reportSummary')],
+        [t('reportStatus'), reportData.status],
+        [t('reportStatusDetails'), reportData.statusDetails],
+        [],
+        [t('reportMetrics')],
+        [t('reportPing'), reportData.ping],
+        [t('reportJitter'), reportData.jitter],
+        [t('reportFailures'), reportData.failures],
+        [t('reportNetworkType'), reportData.type],
+        [t('reportProvider'), reportData.provider],
+        [],
+        [t('reportHistory')],
+        [t('reportNumber'), t('reportDateTime'), t('reportResponse'), t('reportVariation'), t('reportReading')],
+        ...history.map((item, index) => [
+          index + 1,
+          item.timestamp.toLocaleString(locale),
+          item.ping === null ? t('reportFailed') : item.ping,
+          item.jitter,
+          getReading(item.ping)
+        ])
+      ];
+      const csvContent = '\ufeff' + rows.map(row => row.map(csvEscape).join(',')).join('\r\n');
+      downloadFile(csvContent, 'text/csv;charset=utf-8;', `relatorio_internet_${generatedAt.getTime()}.csv`);
     });
 
     // Função para reiniciar / limpar o estado se necessário
