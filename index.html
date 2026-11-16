@@ -183,6 +183,19 @@
       font-weight: 700;
     }
 
+    .network-value {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .network-icon {
+      width: 1.35rem;
+      height: 1.35rem;
+      flex: 0 0 auto;
+      color: var(--accent);
+    }
+
     .card .unit {
       font-size: 1rem;
       font-weight: 400;
@@ -387,7 +400,16 @@
 
       <div class="card">
         <span class="title" data-i18n="typeTitle">Tipo / Provedor</span>
-        <div class="value" id="netType" style="font-size: 1.3rem;">--</div>
+        <div class="value network-value">
+          <svg class="network-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="m7 8 3.5 2.5m6.5-2.5-3.5 2.5M12 14v4" />
+            <circle cx="5" cy="6.5" r="2" />
+            <circle cx="19" cy="6.5" r="2" />
+            <circle cx="12" cy="12" r="2" />
+            <circle cx="12" cy="20" r="2" />
+          </svg>
+          <span id="netType" style="font-size: 1.3rem;">--</span>
+        </div>
         <span class="subtitle" id="netSpeed" data-i18n="netSpeedLoading">Carregando detalhes...</span>
       </div>
     </div>
@@ -438,14 +460,14 @@
 
     <div class="info-footer">
       <span data-i18n="footerText">As medições de estabilidade enviam pequenas requisições a um servidor da Cloudflare e usam poucos dados.</span>
-      <br><span style="color: var(--accent); font-weight: 600; margin-top: 0.5rem; display: inline-block;">Versão: v1.8.2</span>
+      <br><span style="color: var(--accent); font-weight: 600; margin-top: 0.5rem; display: inline-block;">Versão: v1.8.4</span>
       <br><span data-i18n="authorCredit">Criado por</span>
       <a href="https://github.com/rodrigosma" target="_blank" rel="noopener noreferrer" style="color: var(--accent);">Rodrigo Maciel da Silva</a>
     </div>
   </div>
 
   <script>
-    console.log("Minha Internet Tá Boa? - Versão: v1.8.2 carregada.");
+    console.log("Minha Internet Tá Boa? - Versão: v1.8.4 carregada.");
 
     // Dicionário de Traduções
     const translations = {
@@ -490,6 +512,7 @@
         guideFailures: "<strong>Falhas:</strong> testes em que o servidor não respondeu a tempo.",
         guideSpeed: "<strong>Importante:</strong> o teste de estabilidade acima não mede velocidade de download ou upload e não garante o desempenho de todos os sites e aplicativos.",
         typeTitle: "Tipo / Provedor",
+        networkTypeUnknown: "Conectado (tipo não identificado)",
         netSpeedLoading: "Carregando detalhes...",
         netSpeedOffline: "Sem conexão com a internet",
         apiLimited: "API de rede limitada",
@@ -577,6 +600,7 @@
         guideFailures: "<strong>Failures:</strong> tests where the server did not respond in time.",
         guideSpeed: "<strong>Important:</strong> the stability test above does not measure download or upload speed and cannot guarantee how every site or app will perform.",
         typeTitle: "Type / ISP",
+        networkTypeUnknown: "Connected (type not detected)",
         netSpeedLoading: "Loading details...",
         netSpeedOffline: "No internet connection",
         apiLimited: "Limited network API",
@@ -709,16 +733,11 @@
     async function updateNetworkApiInfo() {
       const conn = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
       
-      let typeLabel = 'Online';
+      let typeLabel = t('networkTypeUnknown');
       let speedText = 'Velocidade estimada';
-
-      // Se estiver no computador (sem type mobile/cellular óbvio), ou se o usuário estiver via cabo/wi-fi,
-      // vamos dar prioridade à detecção de desktop vs mobile e evitar falsos positivos do effectiveType '4g' no desktop Chrome/Edge.
-      const isMobileDevice = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 
       if (conn) {
         const rawType = conn.type ? conn.type.toLowerCase() : '';
-        const effective = conn.effectiveType ? conn.effectiveType.toLowerCase() : '';
 
         if (rawType.includes('wifi') || rawType === 'wireless') {
           typeLabel = '📡 Wi-Fi';
@@ -726,22 +745,6 @@
           typeLabel = '🛜 Cabo (Ethernet)';
         } else if (rawType.includes('cellular') || rawType === 'cellular' || rawType === 'mobile') {
           typeLabel = '📱 Celular';
-        } else {
-          // Se for desktop (ou userAgent não mobile), a API do navegador costuma retornar effectiveType '4g' por padrão para qualquer conexão boa.
-          if (!isMobileDevice) {
-            typeLabel = '🛜 Cabo / Rede';
-          } else {
-            // Em dispositivos móveis
-            let gen = '4G';
-            if (effective === '5g' || (conn.downlink && conn.downlink > 50)) {
-              gen = '5G';
-            } else if (effective === '3g') {
-              gen = '3G';
-            } else if (effective === '2g') {
-              gen = '2G';
-            }
-            typeLabel = `📱 Celular (${gen})`;
-          }
         }
 
         if (conn.downlink) {
@@ -750,7 +753,7 @@
           speedText = conn.effectiveType ? `Tipo: ${conn.effectiveType}` : 'Sem estimativa detalhada';
         }
       } else {
-        typeLabel = navigator.onLine ? '🛜 Cabo / Rede' : '❌ Offline';
+        typeLabel = navigator.onLine ? t('networkTypeUnknown') : '❌ Offline';
         speedText = 'API de rede limitada';
       }
 
