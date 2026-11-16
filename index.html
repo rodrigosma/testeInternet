@@ -223,6 +223,81 @@
       color: var(--text);
     }
 
+    .speed-test-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 14px;
+      padding: 1.25rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .speed-test-card h2 {
+      font-size: 1.1rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .speed-test-card p {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      line-height: 1.5;
+    }
+
+    .speed-test-warning {
+      margin: 0.75rem 0;
+      padding: 0.75rem 1rem;
+      border-left: 4px solid var(--warning);
+      background: rgba(245, 158, 11, 0.1);
+      border-radius: 6px;
+    }
+
+    .speed-test-warning strong {
+      color: var(--text);
+    }
+
+    .speed-test-controls {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin-top: 1rem;
+    }
+
+    .speed-test-status {
+      min-height: 1.5em;
+      color: var(--text-muted);
+      font-size: 0.9rem;
+    }
+
+    .speed-test-results {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 0.75rem;
+      margin-top: 1rem;
+    }
+
+    .speed-test-results[hidden] {
+      display: none;
+    }
+
+    .speed-test-result {
+      padding: 1rem;
+      background: #0f172a;
+      border: 1px solid var(--card-border);
+      border-radius: 10px;
+    }
+
+    .speed-test-result span {
+      display: block;
+      color: var(--text-muted);
+      font-size: 0.8rem;
+    }
+
+    .speed-test-result strong {
+      display: block;
+      margin-top: 0.25rem;
+      font-size: 1.5rem;
+    }
+
     /* Gráfico */
     .chart-container {
       background: var(--card-bg);
@@ -275,7 +350,7 @@
     </div>
     <header>
       <h1 data-i18n="mainTitle">Minha Internet Tá Boa?</h1>
-      <p data-i18n="mainSubtitle">Teste de resposta e estabilidade (não mede velocidade de download ou upload)</p>
+      <p data-i18n="mainSubtitle">Teste a estabilidade e, separadamente, a velocidade da conexão</p>
     </header>
 
     <div class="status-banner">
@@ -317,6 +392,27 @@
       </div>
     </div>
 
+    <section class="speed-test-card" aria-labelledby="speedTestTitle">
+      <h2 id="speedTestTitle" data-i18n="speedTestTitle">Teste de velocidade</h2>
+      <p data-i18n="speedTestIntro">Meça download e upload separadamente. Este teste é independente das medições de estabilidade acima.</p>
+      <p class="speed-test-warning" data-i18n="speedTestWarning"><strong>Antes de começar:</strong> o teste transfere até 15 MB (10 MB de download e 5 MB de upload), pode consumir sua franquia e compartilha seu endereço IP com a Cloudflare. A medição de estabilidade será pausada durante o teste.</p>
+      <div class="speed-test-controls">
+        <button id="speedTestBtn" type="button" data-i18n="speedTestStart">Iniciar teste de velocidade</button>
+        <p id="speedTestStatus" class="speed-test-status" role="status" aria-live="polite"></p>
+      </div>
+      <div id="speedTestResults" class="speed-test-results" hidden>
+        <div class="speed-test-result">
+          <span data-i18n="speedTestDownload">Download</span>
+          <strong id="speedTestDownloadValue">-- Mbps</strong>
+        </div>
+        <div class="speed-test-result">
+          <span data-i18n="speedTestUpload">Upload</span>
+          <strong id="speedTestUploadValue">-- Mbps</strong>
+        </div>
+      </div>
+      <p style="margin-top: 0.75rem;" data-i18n="speedTestAccuracy">Resultado aproximado, sujeito ao Wi-Fi, aparelho, servidor e outros usos da conexão.</p>
+    </section>
+
     <section class="help-card" aria-labelledby="testGuideTitle">
       <h3 id="testGuideTitle" data-i18n="testGuideTitle">Como entender este teste</h3>
       <p data-i18n="testGuideIntro">Ele verifica se seu aparelho recebe respostas rápidas e estáveis de um servidor de teste.</p>
@@ -325,7 +421,7 @@
         <li data-i18n="guideJitter"><strong>Variação:</strong> quanto o tempo de resposta muda entre testes. Menor significa mais estabilidade.</li>
         <li data-i18n="guideFailures"><strong>Falhas:</strong> testes em que o servidor não respondeu a tempo.</li>
       </ul>
-      <p data-i18n="guideSpeed"><strong>Importante:</strong> este teste não mede velocidade de download ou upload e não garante o desempenho de todos os sites e aplicativos.</p>
+      <p data-i18n="guideSpeed"><strong>Importante:</strong> o teste de estabilidade acima não mede velocidade de download ou upload e não garante o desempenho de todos os sites e aplicativos.</p>
     </section>
 
     <div class="chart-container">
@@ -341,19 +437,19 @@
     </div>
 
     <div class="info-footer" data-i18n="footerText">
-      O teste envia pequenas requisições a um servidor da Cloudflare para medir o tempo de resposta e usa poucos dados.
-      <br><span style="color: var(--accent); font-weight: 600; margin-top: 0.5rem; display: inline-block;">Versão: v1.7.0</span>
+      As medições de estabilidade enviam pequenas requisições a um servidor da Cloudflare e usam poucos dados.
+      <br><span style="color: var(--accent); font-weight: 600; margin-top: 0.5rem; display: inline-block;">Versão: v1.8.0</span>
     </div>
   </div>
 
   <script>
-    console.log("Minha Internet Tá Boa? - Versão: v1.7.0 carregada.");
+    console.log("Minha Internet Tá Boa? - Versão: v1.8.0 carregada.");
 
     // Dicionário de Traduções
     const translations = {
       pt: {
         mainTitle: "Minha Internet Tá Boa?",
-        mainSubtitle: "Teste de resposta e estabilidade (não mede velocidade de download ou upload)",
+        mainSubtitle: "Teste a estabilidade e, separadamente, a velocidade da conexão",
         connectingTitle: "Conectando...",
         connectingDesc: "Iniciando medições de rede",
         pauseBtn: "Pausar",
@@ -373,10 +469,23 @@
         lossSubtitle: "erros de testes",
         testGuideTitle: "Como entender este teste",
         testGuideIntro: "Ele verifica se seu aparelho recebe respostas rápidas e estáveis de um servidor de teste.",
+        speedTestTitle: "Teste de velocidade",
+        speedTestIntro: "Meça download e upload separadamente. Este teste é independente das medições de estabilidade acima.",
+        speedTestWarning: "<strong>Antes de começar:</strong> o teste transfere até 15 MB (10 MB de download e 5 MB de upload), pode consumir sua franquia e compartilha seu endereço IP com a Cloudflare. A medição de estabilidade será pausada durante o teste.",
+        speedTestStart: "Iniciar teste de velocidade",
+        speedTestDownload: "Download",
+        speedTestUpload: "Upload",
+        speedTestDownloading: "Medindo download...",
+        speedTestUploading: "Medindo upload...",
+        speedTestDone: "Teste concluído.",
+        speedTestOffline: "Sem conexão com a internet. Conecte-se e tente novamente.",
+        speedTestError: "Não foi possível concluir o teste. Verifique sua conexão e tente novamente.",
+        speedTestTimeout: "O teste demorou demais e foi interrompido. Tente novamente com uma conexão melhor.",
+        speedTestAccuracy: "Resultado aproximado, sujeito ao Wi-Fi, aparelho, servidor e outros usos da conexão.",
         guidePing: "<strong>Ping:</strong> tempo para a resposta chegar. Em geral, quanto menor, melhor.",
         guideJitter: "<strong>Variação:</strong> quanto o tempo de resposta muda entre testes. Menor significa mais estabilidade.",
         guideFailures: "<strong>Falhas:</strong> testes em que o servidor não respondeu a tempo.",
-        guideSpeed: "<strong>Importante:</strong> este teste não mede velocidade de download ou upload e não garante o desempenho de todos os sites e aplicativos.",
+        guideSpeed: "<strong>Importante:</strong> o teste de estabilidade acima não mede velocidade de download ou upload e não garante o desempenho de todos os sites e aplicativos.",
         typeTitle: "Tipo / Provedor",
         netSpeedLoading: "Carregando detalhes...",
         netSpeedOffline: "Sem conexão com a internet",
@@ -410,8 +519,8 @@
         reportSlow: "Resposta lenta",
         reportFailed: "Sem resposta",
         reportNoData: "Ainda não há medições para mostrar.",
-        reportLimitNote: "Este teste avalia o tempo de resposta a um servidor da Cloudflare. Ele não mede a velocidade de download ou upload e não representa necessariamente o desempenho de todos os sites e aplicativos.",
-        footerText: "O teste envia pequenas requisições a um servidor da Cloudflare para medir o tempo de resposta e usa poucos dados.",
+        reportLimitNote: "Este relatório resume as medições de estabilidade e tempo de resposta. Ele não inclui velocidade de download ou upload e não representa necessariamente o desempenho de todos os sites e aplicativos.",
+        footerText: "As medições de estabilidade enviam pequenas requisições a um servidor da Cloudflare e usam poucos dados.",
         statusDisconnectedTitle: "Desconectado",
         statusDisconnectedDesc: "Você não possui sinal de rede local",
         statusTimeoutTitle: "Sem Conexão ou Timeout",
@@ -425,7 +534,7 @@
       },
       en: {
         mainTitle: "Is My Internet Good?",
-        mainSubtitle: "Response and stability test (does not measure download or upload speed)",
+        mainSubtitle: "Test connection stability and, separately, connection speed",
         connectingTitle: "Connecting...",
         connectingDesc: "Starting network measurements",
         pauseBtn: "Pause",
@@ -445,10 +554,23 @@
         lossSubtitle: "errors out of tests",
         testGuideTitle: "Understanding this test",
         testGuideIntro: "It checks whether your device gets quick, consistent responses from a test server.",
+        speedTestTitle: "Speed test",
+        speedTestIntro: "Measure download and upload separately. This test is independent of the stability measurements above.",
+        speedTestWarning: "<strong>Before starting:</strong> the test transfers up to 15 MB (10 MB download and 5 MB upload), may use your data allowance, and shares your IP address with Cloudflare. Stability measurements will pause during the test.",
+        speedTestStart: "Start speed test",
+        speedTestDownload: "Download",
+        speedTestUpload: "Upload",
+        speedTestDownloading: "Measuring download...",
+        speedTestUploading: "Measuring upload...",
+        speedTestDone: "Test complete.",
+        speedTestOffline: "No internet connection. Connect and try again.",
+        speedTestError: "The test could not be completed. Check your connection and try again.",
+        speedTestTimeout: "The test took too long and was stopped. Try again with a better connection.",
+        speedTestAccuracy: "Approximate results; affected by Wi-Fi, device, server, and other network activity.",
         guidePing: "<strong>Ping:</strong> how long a response takes. Generally, lower is better.",
         guideJitter: "<strong>Variation:</strong> how much response time changes between tests. Lower means a steadier connection.",
         guideFailures: "<strong>Failures:</strong> tests where the server did not respond in time.",
-        guideSpeed: "<strong>Important:</strong> this test does not measure download or upload speed and cannot guarantee how every site or app will perform.",
+        guideSpeed: "<strong>Important:</strong> the stability test above does not measure download or upload speed and cannot guarantee how every site or app will perform.",
         typeTitle: "Type / ISP",
         netSpeedLoading: "Loading details...",
         netSpeedOffline: "No internet connection",
@@ -482,8 +604,8 @@
         reportSlow: "Slow response",
         reportFailed: "No response",
         reportNoData: "There are no measurements to show yet.",
-        reportLimitNote: "This test measures response time to a Cloudflare server. It does not measure download or upload speed and may not represent performance on every website or app.",
-        footerText: "The test sends small requests to a Cloudflare server to measure response time and uses little data.",
+        reportLimitNote: "This report summarizes stability and response-time measurements. It does not include download or upload speed and may not represent performance on every website or app.",
+        footerText: "Stability measurements send small requests to a Cloudflare server and use little data.",
         statusDisconnectedTitle: "Disconnected",
         statusDisconnectedDesc: "You have no local network signal",
         statusTimeoutTitle: "No Connection or Timeout",
@@ -501,11 +623,17 @@
 
     // Configurações de Rede e Estado (Usando um endpoint leve e universal)
     const PING_ENDPOINT = 'https://www.cloudflare.com/favicon.ico';
+    const SPEED_TEST_ENDPOINT = 'https://speed.cloudflare.com';
+    const SPEED_DOWNLOAD_BYTES = 10000000;
+    const SPEED_UPLOAD_BYTES = 5000000;
     const INTERVAL_MS = 2000;
     const TIMEOUT_MS = 3000;
+    const SPEED_TEST_TIMEOUT_MS = 60000;
     const MAX_HISTORY = 30;
 
     let isRunning = true;
+    let isSpeedTestRunning = false;
+    let speedTestStatusKey = '';
     let timerId = null;
     let lastPing = null;
     let history = [];
@@ -525,6 +653,9 @@
         const key = el.getAttribute('data-i18n');
         el.innerHTML = t(key);
       });
+      if (speedTestStatusKey) {
+        speedTestStatus.innerText = t(speedTestStatusKey);
+      }
       toggleBtn.innerText = isRunning ? t('pauseBtn') : t('resumeBtn');
     }
 
@@ -550,6 +681,11 @@
     const lossCount = document.getElementById('lossCount');
     const netType = document.getElementById('netType');
     const netSpeed = document.getElementById('netSpeed');
+    const speedTestBtn = document.getElementById('speedTestBtn');
+    const speedTestStatus = document.getElementById('speedTestStatus');
+    const speedTestResults = document.getElementById('speedTestResults');
+    const speedTestDownloadValue = document.getElementById('speedTestDownloadValue');
+    const speedTestUploadValue = document.getElementById('speedTestUploadValue');
     const canvas = document.getElementById('latencyChart');
     const ctx = canvas.getContext('2d');
 
@@ -848,6 +984,91 @@
         clearInterval(timerId);
       }
     });
+
+    function calculateMbps(byteCount, elapsedMs) {
+      const mbps = (byteCount * 8) / (Math.max(elapsedMs, 1) * 1000);
+      const locale = currentLang === 'en' ? 'en-US' : 'pt-BR';
+      return `${mbps.toLocaleString(locale, { minimumFractionDigits: 1, maximumFractionDigits: 1 })} Mbps`;
+    }
+
+    function setSpeedTestStatus(key) {
+      speedTestStatusKey = key;
+      speedTestStatus.innerText = t(key);
+    }
+
+    async function runSpeedTest() {
+      if (isSpeedTestRunning) return;
+      if (!navigator.onLine) {
+        setSpeedTestStatus('speedTestOffline');
+        return;
+      }
+
+      isSpeedTestRunning = true;
+      speedTestBtn.disabled = true;
+      setSpeedTestStatus('speedTestDownloading');
+      speedTestResults.hidden = true;
+
+      const wasRunning = isRunning;
+      if (wasRunning) {
+        isRunning = false;
+        clearInterval(timerId);
+        timerId = null;
+        toggleBtn.innerText = t('resumeBtn');
+      }
+      toggleBtn.disabled = true;
+
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), SPEED_TEST_TIMEOUT_MS);
+
+      try {
+        const downloadStartedAt = performance.now();
+        const downloadResponse = await fetch(
+          `${SPEED_TEST_ENDPOINT}/__down?bytes=${SPEED_DOWNLOAD_BYTES}&t=${Date.now()}`,
+          { cache: 'no-store', signal: controller.signal }
+        );
+        if (!downloadResponse.ok) {
+          throw new Error(`Download test returned HTTP ${downloadResponse.status}`);
+        }
+        const downloadedData = await downloadResponse.arrayBuffer();
+        const downloadElapsedMs = performance.now() - downloadStartedAt;
+
+        setSpeedTestStatus('speedTestUploading');
+        const uploadData = new Uint8Array(SPEED_UPLOAD_BYTES);
+        const uploadStartedAt = performance.now();
+        const uploadResponse = await fetch(`${SPEED_TEST_ENDPOINT}/__up?t=${Date.now()}`, {
+          method: 'POST',
+          body: uploadData,
+          cache: 'no-store',
+          signal: controller.signal
+        });
+        if (!uploadResponse.ok) {
+          throw new Error(`Upload test returned HTTP ${uploadResponse.status}`);
+        }
+        await uploadResponse.arrayBuffer();
+        const uploadElapsedMs = performance.now() - uploadStartedAt;
+
+        speedTestDownloadValue.innerText = calculateMbps(downloadedData.byteLength, downloadElapsedMs);
+        speedTestUploadValue.innerText = calculateMbps(uploadData.byteLength, uploadElapsedMs);
+        speedTestResults.hidden = false;
+        setSpeedTestStatus('speedTestDone');
+      } catch (error) {
+        console.error('Internet speed test failed.', error);
+        setSpeedTestStatus(error.name === 'AbortError' ? 'speedTestTimeout' : 'speedTestError');
+      } finally {
+        clearTimeout(timeoutId);
+        isSpeedTestRunning = false;
+        speedTestBtn.disabled = false;
+        toggleBtn.disabled = false;
+        if (wasRunning) {
+          isRunning = true;
+          measurePing();
+          timerId = setInterval(measurePing, INTERVAL_MS);
+        }
+        toggleBtn.innerText = isRunning ? t('pauseBtn') : t('resumeBtn');
+      }
+    }
+
+    speedTestBtn.addEventListener('click', runSpeedTest);
 
     function escapeHtml(value) {
       return String(value).replace(/[&<>"']/g, char => ({
