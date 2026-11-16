@@ -395,7 +395,7 @@
     <section class="speed-test-card" aria-labelledby="speedTestTitle">
       <h2 id="speedTestTitle" data-i18n="speedTestTitle">Teste de velocidade</h2>
       <p data-i18n="speedTestIntro">Meça download e upload separadamente. Este teste é independente das medições de estabilidade acima.</p>
-      <p class="speed-test-warning" data-i18n="speedTestWarning"><strong>Antes de começar:</strong> o teste transfere até 15 MB (10 MB de download e 5 MB de upload), pode consumir sua franquia e compartilha seu endereço IP com a Cloudflare. A medição de estabilidade será pausada durante o teste.</p>
+      <p class="speed-test-warning" data-i18n="speedTestWarning"><strong>Antes de começar:</strong> o teste transfere até 3 MB (2 MB de download e 1 MB de upload), pode consumir sua franquia e compartilha seu endereço IP com a Cloudflare. A medição de estabilidade será pausada durante o teste.</p>
       <div class="speed-test-controls">
         <button id="speedTestBtn" type="button" data-i18n="speedTestStart">Iniciar teste de velocidade</button>
         <p id="speedTestStatus" class="speed-test-status" role="status" aria-live="polite"></p>
@@ -438,14 +438,14 @@
 
     <div class="info-footer">
       <span data-i18n="footerText">As medições de estabilidade enviam pequenas requisições a um servidor da Cloudflare e usam poucos dados.</span>
-      <br><span style="color: var(--accent); font-weight: 600; margin-top: 0.5rem; display: inline-block;">Versão: v1.8.1</span>
+      <br><span style="color: var(--accent); font-weight: 600; margin-top: 0.5rem; display: inline-block;">Versão: v1.8.2</span>
       <br><span data-i18n="authorCredit">Criado por</span>
       <a href="https://github.com/rodrigosma" target="_blank" rel="noopener noreferrer" style="color: var(--accent);">Rodrigo Maciel da Silva</a>
     </div>
   </div>
 
   <script>
-    console.log("Minha Internet Tá Boa? - Versão: v1.8.1 carregada.");
+    console.log("Minha Internet Tá Boa? - Versão: v1.8.2 carregada.");
 
     // Dicionário de Traduções
     const translations = {
@@ -473,7 +473,7 @@
         testGuideIntro: "Ele verifica se seu aparelho recebe respostas rápidas e estáveis de um servidor de teste.",
         speedTestTitle: "Teste de velocidade",
         speedTestIntro: "Meça download e upload separadamente. Este teste é independente das medições de estabilidade acima.",
-        speedTestWarning: "<strong>Antes de começar:</strong> o teste transfere até 15 MB (10 MB de download e 5 MB de upload), pode consumir sua franquia e compartilha seu endereço IP com a Cloudflare. A medição de estabilidade será pausada durante o teste.",
+        speedTestWarning: "<strong>Antes de começar:</strong> o teste transfere até 3 MB (2 MB de download e 1 MB de upload), pode consumir sua franquia e compartilha seu endereço IP com a Cloudflare. A medição de estabilidade será pausada durante o teste.",
         speedTestStart: "Iniciar teste de velocidade",
         speedTestDownload: "Download",
         speedTestUpload: "Upload",
@@ -560,7 +560,7 @@
         testGuideIntro: "It checks whether your device gets quick, consistent responses from a test server.",
         speedTestTitle: "Speed test",
         speedTestIntro: "Measure download and upload separately. This test is independent of the stability measurements above.",
-        speedTestWarning: "<strong>Before starting:</strong> the test transfers up to 15 MB (10 MB download and 5 MB upload), may use your data allowance, and shares your IP address with Cloudflare. Stability measurements will pause during the test.",
+        speedTestWarning: "<strong>Before starting:</strong> the test transfers up to 3 MB (2 MB download and 1 MB upload), may use your data allowance, and shares your IP address with Cloudflare. Stability measurements will pause during the test.",
         speedTestStart: "Start speed test",
         speedTestDownload: "Download",
         speedTestUpload: "Upload",
@@ -630,8 +630,8 @@
     // Configurações de Rede e Estado (Usando um endpoint leve e universal)
     const PING_ENDPOINT = 'https://www.cloudflare.com/favicon.ico';
     const SPEED_TEST_ENDPOINT = 'https://speed.cloudflare.com';
-    const SPEED_DOWNLOAD_BYTES = 10000000;
-    const SPEED_UPLOAD_BYTES = 5000000;
+    const SPEED_DOWNLOAD_BYTES = 2000000;
+    const SPEED_UPLOAD_BYTES = 1000000;
     const INTERVAL_MS = 2000;
     const TIMEOUT_MS = 3000;
     const SPEED_TEST_TIMEOUT_MS = 120000;
