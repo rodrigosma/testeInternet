@@ -275,8 +275,80 @@
       margin-top: 1rem;
     }
 
+    .speed-test-profile {
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+      color: var(--text-muted);
+      font-size: 0.8rem;
+    }
+
+    .speed-test-profile select {
+      min-width: 220px;
+    }
+
     .speed-test-status {
       min-height: 1.5em;
+      color: var(--text-muted);
+      font-size: 0.9rem;
+    }
+
+    .speedometer {
+      display: grid;
+      justify-items: center;
+      margin: 1.25rem auto 0.5rem;
+      max-width: 360px;
+    }
+
+    .speedometer[hidden] {
+      display: none;
+    }
+
+    .speedometer svg {
+      width: min(100%, 300px);
+      overflow: visible;
+    }
+
+    .speedometer-track {
+      fill: none;
+      stroke: var(--card-border);
+      stroke-width: 14;
+      stroke-linecap: round;
+    }
+
+    .speedometer-progress {
+      fill: none;
+      stroke: var(--accent);
+      stroke-width: 14;
+      stroke-linecap: round;
+      stroke-dasharray: 383;
+      stroke-dashoffset: 383;
+      transition: stroke-dashoffset 0.12s linear, stroke 0.2s ease;
+    }
+
+    .speedometer-needle {
+      stroke: var(--text);
+      stroke-width: 4;
+      stroke-linecap: round;
+      transform-origin: 150px 150px;
+      transition: transform 0.12s linear;
+    }
+
+    .speedometer-value {
+      fill: var(--text);
+      font-size: 25px;
+      font-weight: 700;
+      text-anchor: middle;
+    }
+
+    .speedometer-unit {
+      fill: var(--text-muted);
+      font-size: 13px;
+      text-anchor: middle;
+    }
+
+    .speedometer-label {
+      margin-top: -0.5rem;
       color: var(--text-muted);
       font-size: 0.9rem;
     }
@@ -309,6 +381,13 @@
       display: block;
       margin-top: 0.25rem;
       font-size: 1.5rem;
+    }
+
+    .speed-test-feedback {
+      margin-top: 0.5rem;
+      color: var(--text-muted);
+      font-size: 0.82rem;
+      line-height: 1.45;
     }
 
     /* Gráfico */
@@ -417,19 +496,43 @@
     <section class="speed-test-card" aria-labelledby="speedTestTitle">
       <h2 id="speedTestTitle" data-i18n="speedTestTitle">Teste de velocidade</h2>
       <p data-i18n="speedTestIntro">Meça download e upload separadamente. Este teste é independente das medições de estabilidade acima.</p>
-      <p class="speed-test-warning" data-i18n="speedTestWarning"><strong>Antes de começar:</strong> o teste transfere até 3 MB (2 MB de download e 1 MB de upload), pode consumir sua franquia e compartilha seu endereço IP com a Cloudflare. A medição de estabilidade será pausada durante o teste.</p>
+      <label class="speed-test-profile">
+        <span data-i18n="speedTestProfileLabel">Volume do teste</span>
+        <select id="speedTestProfile">
+          <option value="light" data-i18n="speedTestProfileLight">Leve — 2 MB download + 1 MB upload (3 MB total)</option>
+          <option value="detailed" data-i18n="speedTestProfileDetailed">Mais detalhado — 5 MB download + 2 MB upload (7 MB total)</option>
+        </select>
+      </label>
+      <p class="speed-test-warning" data-i18n="speedTestWarning"><strong>Antes de começar:</strong> o teste transfere o volume indicado no perfil selecionado, pode consumir sua franquia e compartilha seu endereço IP com a Cloudflare. Perfis com mais dados podem afetar outros aparelhos na rede. A medição de estabilidade será pausada durante o teste.</p>
       <div class="speed-test-controls">
         <button id="speedTestBtn" type="button" data-i18n="speedTestStart">Iniciar teste de velocidade</button>
         <p id="speedTestStatus" class="speed-test-status" role="status" aria-live="polite"></p>
+      </div>
+      <div id="speedometer" class="speedometer" aria-live="off" hidden>
+        <svg viewBox="0 0 300 180" role="img" aria-labelledby="speedometerLabel">
+          <title id="speedometerLabel" data-i18n="speedometerTitle">Velocidade da conexão</title>
+          <path class="speedometer-track" d="M 28 150 A 122 122 0 0 1 272 150" />
+          <path id="speedometerProgress" class="speedometer-progress" d="M 28 150 A 122 122 0 0 1 272 150" />
+          <line id="speedometerNeedle" class="speedometer-needle" x1="150" y1="150" x2="150" y2="55" />
+          <circle cx="150" cy="150" r="8" fill="var(--text)" />
+          <text x="26" y="174" class="speedometer-unit">0</text>
+          <text x="150" y="24" class="speedometer-unit">50</text>
+          <text x="274" y="174" class="speedometer-unit">100+</text>
+          <text id="speedometerValue" class="speedometer-value" x="150" y="126">0.0</text>
+          <text class="speedometer-unit" x="150" y="148">Mbps</text>
+        </svg>
+        <p id="speedometerPhase" class="speedometer-label" data-i18n="speedometerDownloading">Velocidade de download</p>
       </div>
       <div id="speedTestResults" class="speed-test-results" hidden>
         <div class="speed-test-result">
           <span data-i18n="speedTestDownload">Download</span>
           <strong id="speedTestDownloadValue">-- Mbps</strong>
+          <p id="speedTestDownloadFeedback" class="speed-test-feedback"></p>
         </div>
         <div class="speed-test-result">
           <span data-i18n="speedTestUpload">Upload</span>
           <strong id="speedTestUploadValue">-- Mbps</strong>
+          <p id="speedTestUploadFeedback" class="speed-test-feedback"></p>
         </div>
       </div>
       <p style="margin-top: 0.75rem;" data-i18n="speedTestAccuracy">Resultado aproximado, sujeito ao Wi-Fi, aparelho, servidor e outros usos da conexão.</p>
@@ -460,14 +563,14 @@
 
     <div class="info-footer">
       <span data-i18n="footerText">As medições de estabilidade enviam pequenas requisições a um servidor da Cloudflare e usam poucos dados.</span>
-      <br><span style="color: var(--accent); font-weight: 600; margin-top: 0.5rem; display: inline-block;">Versão: v1.8.5</span>
+      <br><span style="color: var(--accent); font-weight: 600; margin-top: 0.5rem; display: inline-block;">Versão: v1.10.0</span>
       <br><span data-i18n="authorCredit">Criado por</span>
       <a href="https://github.com/rodrigosma" target="_blank" rel="noopener noreferrer" style="color: var(--accent);">Rodrigo Maciel da Silva</a>
     </div>
   </div>
 
   <script>
-    console.log("Minha Internet Tá Boa? - Versão: v1.8.5 carregada.");
+    console.log("Minha Internet Tá Boa? - Versão: v1.10.0 carregada.");
 
     // Dicionário de Traduções
     const translations = {
@@ -495,18 +598,30 @@
         testGuideIntro: "Ele verifica se seu aparelho recebe respostas rápidas e estáveis de um servidor de teste.",
         speedTestTitle: "Teste de velocidade",
         speedTestIntro: "Meça download e upload separadamente. Este teste é independente das medições de estabilidade acima.",
-        speedTestWarning: "<strong>Antes de começar:</strong> o teste transfere até 3 MB (2 MB de download e 1 MB de upload), pode consumir sua franquia e compartilha seu endereço IP com a Cloudflare. A medição de estabilidade será pausada durante o teste.",
+        speedTestProfileLabel: "Volume do teste",
+        speedTestProfileLight: "Leve — 2 MB download + 1 MB upload (3 MB total)",
+        speedTestProfileDetailed: "Mais detalhado — 5 MB download + 2 MB upload (7 MB total)",
+        speedTestWarning: "<strong>Antes de começar:</strong> o teste transfere o volume indicado no perfil selecionado, pode consumir sua franquia e compartilha seu endereço IP com a Cloudflare. Perfis com mais dados podem afetar outros aparelhos na rede. A medição de estabilidade será pausada durante o teste.",
         speedTestStart: "Iniciar teste de velocidade",
+        speedometerTitle: "Velocidade da conexão",
         speedTestDownload: "Download",
         speedTestUpload: "Upload",
         speedTestDownloading: "Medindo download...",
         speedTestUploading: "Medindo upload...",
+        speedometerDownloading: "Velocidade de download",
+        speedometerUploading: "Velocidade de upload",
         speedTestDone: "Teste concluído.",
         speedTestOffline: "Sem conexão com a internet. Conecte-se e tente novamente.",
         speedTestError: "Não foi possível concluir o teste. Verifique sua conexão e tente novamente.",
         speedTestDownloadTimeout: "O download demorou mais de 2 minutos e foi interrompido. Verifique a conexão e tente novamente.",
         speedTestUploadTimeout: "O upload demorou mais de 2 minutos e foi interrompido. Verifique a conexão e tente novamente.",
-        speedTestAccuracy: "Resultado aproximado, sujeito ao Wi-Fi, aparelho, servidor e outros usos da conexão.",
+        speedTestAccuracy: "As dicas são referências, não garantias: o resultado varia conforme o serviço, o aparelho, o Wi-Fi e outros usos da rede.",
+        speedDownloadLow: "Pode atender à navegação simples. Vídeos em alta qualidade ou vários aparelhos podem precisar de mais velocidade.",
+        speedDownloadMedium: "Em geral, atende à navegação e a vídeos HD em um aparelho. Vídeos 4K ou vários aparelhos podem exigir mais.",
+        speedDownloadHigh: "Boa margem para vídeos 4K em um aparelho. Outros aparelhos e atividades dividem a capacidade da conexão.",
+        speedUploadLow: "Pode atender a envios leves. Chamadas de vídeo ou envio de arquivos grandes podem ficar limitados.",
+        speedUploadMedium: "Em geral, atende a uma chamada de vídeo e a envios do dia a dia. Várias chamadas podem exigir mais.",
+        speedUploadHigh: "Boa margem para chamadas de vídeo e envios. O uso simultâneo em outros aparelhos também conta.",
         guidePing: "<strong>Ping:</strong> tempo para a resposta chegar. Em geral, quanto menor, melhor.",
         guideJitter: "<strong>Variação:</strong> quanto o tempo de resposta muda entre testes. Menor significa mais estabilidade.",
         guideFailures: "<strong>Falhas:</strong> testes em que o servidor não respondeu a tempo.",
@@ -583,18 +698,30 @@
         testGuideIntro: "It checks whether your device gets quick, consistent responses from a test server.",
         speedTestTitle: "Speed test",
         speedTestIntro: "Measure download and upload separately. This test is independent of the stability measurements above.",
-        speedTestWarning: "<strong>Before starting:</strong> the test transfers up to 3 MB (2 MB download and 1 MB upload), may use your data allowance, and shares your IP address with Cloudflare. Stability measurements will pause during the test.",
+        speedTestProfileLabel: "Test size",
+        speedTestProfileLight: "Light — 2 MB download + 1 MB upload (3 MB total)",
+        speedTestProfileDetailed: "More detailed — 5 MB download + 2 MB upload (7 MB total)",
+        speedTestWarning: "<strong>Before starting:</strong> the test transfers the amount shown in the selected profile, may use your data allowance, and shares your IP address with Cloudflare. Larger profiles may affect other devices on your network. Stability measurements will pause during the test.",
         speedTestStart: "Start speed test",
+        speedometerTitle: "Connection speed",
         speedTestDownload: "Download",
         speedTestUpload: "Upload",
         speedTestDownloading: "Measuring download...",
         speedTestUploading: "Measuring upload...",
+        speedometerDownloading: "Download speed",
+        speedometerUploading: "Upload speed",
         speedTestDone: "Test complete.",
         speedTestOffline: "No internet connection. Connect and try again.",
         speedTestError: "The test could not be completed. Check your connection and try again.",
         speedTestDownloadTimeout: "The download took over 2 minutes and was stopped. Check your connection and try again.",
         speedTestUploadTimeout: "The upload took over 2 minutes and was stopped. Check your connection and try again.",
-        speedTestAccuracy: "Approximate results; affected by Wi-Fi, device, server, and other network activity.",
+        speedTestAccuracy: "These tips are guides, not guarantees: results vary by service, device, Wi-Fi, and other network activity.",
+        speedDownloadLow: "May be enough for basic browsing. High-quality video or several devices may need more speed.",
+        speedDownloadMedium: "Generally suitable for browsing and HD video on one device. 4K video or several devices may need more.",
+        speedDownloadHigh: "Good headroom for 4K video on one device. Other devices and activities share the connection.",
+        speedUploadLow: "May be enough for light uploads. Video calls or large file uploads may be limited.",
+        speedUploadMedium: "Generally suitable for one video call and everyday uploads. Several calls may need more.",
+        speedUploadHigh: "Good headroom for video calls and uploads. Simultaneous use on other devices also matters.",
         guidePing: "<strong>Ping:</strong> how long a response takes. Generally, lower is better.",
         guideJitter: "<strong>Variation:</strong> how much response time changes between tests. Lower means a steadier connection.",
         guideFailures: "<strong>Failures:</strong> tests where the server did not respond in time.",
@@ -654,8 +781,12 @@
     // Configurações de Rede e Estado (Usando um endpoint leve e universal)
     const PING_ENDPOINT = 'https://www.cloudflare.com/favicon.ico';
     const SPEED_TEST_ENDPOINT = 'https://speed.cloudflare.com';
-    const SPEED_DOWNLOAD_BYTES = 2000000;
-    const SPEED_UPLOAD_BYTES = 1000000;
+    const SPEED_TEST_PROFILES = {
+      light: { downloadBytes: 2000000, uploadBytes: 1000000 },
+      detailed: { downloadBytes: 5000000, uploadBytes: 2000000 }
+    };
+    const SPEEDOMETER_MAX_MBPS = 100;
+    const SPEEDOMETER_ARC_LENGTH = 383;
     const INTERVAL_MS = 2000;
     const TIMEOUT_MS = 3000;
     const SPEED_TEST_TIMEOUT_MS = 120000;
@@ -712,10 +843,18 @@
     const netType = document.getElementById('netType');
     const netSpeed = document.getElementById('netSpeed');
     const speedTestBtn = document.getElementById('speedTestBtn');
+    const speedTestProfile = document.getElementById('speedTestProfile');
     const speedTestStatus = document.getElementById('speedTestStatus');
     const speedTestResults = document.getElementById('speedTestResults');
     const speedTestDownloadValue = document.getElementById('speedTestDownloadValue');
     const speedTestUploadValue = document.getElementById('speedTestUploadValue');
+    const speedTestDownloadFeedback = document.getElementById('speedTestDownloadFeedback');
+    const speedTestUploadFeedback = document.getElementById('speedTestUploadFeedback');
+    const speedometer = document.getElementById('speedometer');
+    const speedometerProgress = document.getElementById('speedometerProgress');
+    const speedometerNeedle = document.getElementById('speedometerNeedle');
+    const speedometerValue = document.getElementById('speedometerValue');
+    const speedometerPhase = document.getElementById('speedometerPhase');
     const canvas = document.getElementById('latencyChart');
     const ctx = canvas.getContext('2d');
 
@@ -1000,9 +1139,106 @@
       return `${mbps.toLocaleString(locale, { minimumFractionDigits: 1, maximumFractionDigits: 1 })} Mbps`;
     }
 
+    function getSpeedFeedbackKey(mbps, direction) {
+      if (direction === 'download') {
+        if (mbps < 5) return 'speedDownloadLow';
+        if (mbps < 25) return 'speedDownloadMedium';
+        return 'speedDownloadHigh';
+      }
+
+      if (mbps < 1) return 'speedUploadLow';
+      if (mbps < 5) return 'speedUploadMedium';
+      return 'speedUploadHigh';
+    }
+
     function setSpeedTestStatus(key) {
       speedTestStatusKey = key;
       speedTestStatus.innerText = t(key);
+    }
+
+    function updateSpeedometer(byteCount, elapsedMs, phaseKey) {
+      const mbps = (byteCount * 8) / (Math.max(elapsedMs, 1) * 1000);
+      const gaugeRatio = Math.min(mbps / SPEEDOMETER_MAX_MBPS, 1);
+      const locale = currentLang === 'en' ? 'en-US' : 'pt-BR';
+      speedometerValue.textContent = mbps.toLocaleString(locale, {
+        minimumFractionDigits: 1,
+        maximumFractionDigits: 1
+      });
+      speedometerNeedle.style.transform = `rotate(${-90 + gaugeRatio * 180}deg)`;
+      speedometerProgress.style.strokeDashoffset = String(SPEEDOMETER_ARC_LENGTH * (1 - gaugeRatio));
+      speedometerPhase.dataset.i18n = phaseKey;
+      speedometerPhase.innerText = t(phaseKey);
+    }
+
+    async function readDownloadStream(response, onProgress, startedAt = performance.now()) {
+      if (!response.body || typeof response.body.getReader !== 'function') {
+        const data = await response.arrayBuffer();
+        const elapsedMs = performance.now() - startedAt;
+        onProgress(data.byteLength, elapsedMs);
+        return { byteCount: data.byteLength, elapsedMs };
+      }
+
+      const reader = response.body.getReader();
+      let byteCount = 0;
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        byteCount += value.byteLength;
+        onProgress(byteCount, performance.now() - startedAt);
+      }
+
+      return { byteCount, elapsedMs: performance.now() - startedAt };
+    }
+
+    function uploadWithProgress(uploadData, signal, onProgress) {
+      return new Promise((resolve, reject) => {
+        const xhr = new XMLHttpRequest();
+        const startedAt = performance.now();
+        let lastProgressElapsedMs = 0;
+        let lastLoadedBytes = 0;
+        let settled = false;
+
+        const cleanup = () => signal.removeEventListener('abort', handleSignalAbort);
+        const rejectOnce = error => {
+          if (settled) return;
+          settled = true;
+          cleanup();
+          reject(error);
+        };
+        const handleSignalAbort = () => {
+          xhr.abort();
+          rejectOnce(new DOMException('The upload test was aborted.', 'AbortError'));
+        };
+
+        signal.addEventListener('abort', handleSignalAbort, { once: true });
+        xhr.upload.addEventListener('progress', event => {
+          if (!event.lengthComputable) return;
+          lastLoadedBytes = event.loaded;
+          lastProgressElapsedMs = performance.now() - startedAt;
+          onProgress(event.loaded, lastProgressElapsedMs);
+        });
+        xhr.addEventListener('load', () => {
+          if (xhr.status < 200 || xhr.status >= 300) {
+            rejectOnce(new Error(`Upload test returned HTTP ${xhr.status}`));
+            return;
+          }
+          if (lastLoadedBytes !== uploadData.byteLength) {
+            rejectOnce(new Error(`Upload test sent ${lastLoadedBytes} of ${uploadData.byteLength} bytes`));
+            return;
+          }
+          if (settled) return;
+          settled = true;
+          cleanup();
+          resolve({ elapsedMs: lastProgressElapsedMs || performance.now() - startedAt });
+        }, { once: true });
+        xhr.addEventListener('error', () => rejectOnce(new Error('Upload test network error.')), { once: true });
+        xhr.addEventListener('abort', () => {
+          rejectOnce(new DOMException('The upload test was aborted.', 'AbortError'));
+        }, { once: true });
+
+        xhr.open('POST', `${SPEED_TEST_ENDPOINT}/__up?t=${Date.now()}`);
+        xhr.send(uploadData);
+      });
     }
 
     async function withSpeedTestTimeout(operation) {
@@ -1024,8 +1260,17 @@
 
       isSpeedTestRunning = true;
       speedTestBtn.disabled = true;
+      speedTestProfile.disabled = true;
       setSpeedTestStatus('speedTestDownloading');
       speedTestResults.hidden = true;
+      speedTestDownloadValue.innerText = '-- Mbps';
+      speedTestUploadValue.innerText = '-- Mbps';
+      speedTestDownloadFeedback.removeAttribute('data-i18n');
+      speedTestUploadFeedback.removeAttribute('data-i18n');
+      speedTestDownloadFeedback.innerText = '';
+      speedTestUploadFeedback.innerText = '';
+      speedometer.hidden = false;
+      updateSpeedometer(0, 1, 'speedometerDownloading');
 
       const wasRunning = isRunning;
       if (wasRunning) {
@@ -1038,39 +1283,44 @@
 
       let currentPhase = 'download';
       try {
+        const profile = SPEED_TEST_PROFILES[speedTestProfile.value];
         const downloadStartedAt = performance.now();
-        const downloadedData = await withSpeedTestTimeout(async signal => {
+        const downloadResult = await withSpeedTestTimeout(async signal => {
           const response = await fetch(
-            `${SPEED_TEST_ENDPOINT}/__down?bytes=${SPEED_DOWNLOAD_BYTES}&t=${Date.now()}`,
+            `${SPEED_TEST_ENDPOINT}/__down?bytes=${profile.downloadBytes}&t=${Date.now()}`,
             { cache: 'no-store', signal }
           );
           if (!response.ok) {
             throw new Error(`Download test returned HTTP ${response.status}`);
           }
-          return response.arrayBuffer();
+          return readDownloadStream(response, (byteCount, elapsedMs) => {
+            updateSpeedometer(byteCount, elapsedMs, 'speedometerDownloading');
+          }, downloadStartedAt);
         });
-        const downloadElapsedMs = performance.now() - downloadStartedAt;
+        if (downloadResult.byteCount !== profile.downloadBytes) {
+          throw new Error(`Download test returned ${downloadResult.byteCount} of ${profile.downloadBytes} bytes`);
+        }
+        const downloadMbps = (downloadResult.byteCount * 8) / (Math.max(downloadResult.elapsedMs, 1) * 1000);
+        speedTestDownloadValue.innerText = calculateMbps(downloadResult.byteCount, downloadResult.elapsedMs);
+        const downloadFeedbackKey = getSpeedFeedbackKey(downloadMbps, 'download');
+        speedTestDownloadFeedback.dataset.i18n = downloadFeedbackKey;
+        speedTestDownloadFeedback.innerText = t(downloadFeedbackKey);
+        speedTestResults.hidden = false;
 
         currentPhase = 'upload';
         setSpeedTestStatus('speedTestUploading');
-        const uploadData = new Uint8Array(SPEED_UPLOAD_BYTES);
-        const uploadStartedAt = performance.now();
-        await withSpeedTestTimeout(async signal => {
-          const response = await fetch(`${SPEED_TEST_ENDPOINT}/__up?t=${Date.now()}`, {
-            method: 'POST',
-            body: uploadData,
-            cache: 'no-store',
-            signal
-          });
-          if (!response.ok) {
-            throw new Error(`Upload test returned HTTP ${response.status}`);
-          }
-          return response.arrayBuffer();
-        });
-        const uploadElapsedMs = performance.now() - uploadStartedAt;
-
-        speedTestDownloadValue.innerText = calculateMbps(downloadedData.byteLength, downloadElapsedMs);
-        speedTestUploadValue.innerText = calculateMbps(uploadData.byteLength, uploadElapsedMs);
+        updateSpeedometer(0, 1, 'speedometerUploading');
+        const uploadData = new Uint8Array(profile.uploadBytes);
+        const uploadResult = await withSpeedTestTimeout(signal => uploadWithProgress(
+          uploadData,
+          signal,
+          (byteCount, elapsedMs) => updateSpeedometer(byteCount, elapsedMs, 'speedometerUploading')
+        ));
+        const uploadMbps = (uploadData.byteLength * 8) / (Math.max(uploadResult.elapsedMs, 1) * 1000);
+        speedTestUploadValue.innerText = calculateMbps(uploadData.byteLength, uploadResult.elapsedMs);
+        const uploadFeedbackKey = getSpeedFeedbackKey(uploadMbps, 'upload');
+        speedTestUploadFeedback.dataset.i18n = uploadFeedbackKey;
+        speedTestUploadFeedback.innerText = t(uploadFeedbackKey);
         speedTestResults.hidden = false;
         setSpeedTestStatus('speedTestDone');
       } catch (error) {
@@ -1079,8 +1329,10 @@
           ? `speedTest${currentPhase === 'download' ? 'Download' : 'Upload'}Timeout`
           : 'speedTestError');
       } finally {
+        speedometer.hidden = true;
         isSpeedTestRunning = false;
         speedTestBtn.disabled = false;
+        speedTestProfile.disabled = false;
         toggleBtn.disabled = false;
         if (wasRunning) {
           isRunning = true;
