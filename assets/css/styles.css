@@ -1,0 +1,417 @@
+:root {
+  --bg: #0f172a;
+  --card-bg: #1e293b;
+  --card-border: #334155;
+  --text: #f8fafc;
+  --text-muted: #94a3b8;
+  --success: #10b981;
+  --warning: #f59e0b;
+  --danger: #ef4444;
+  --accent: #38bdf8;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+body {
+  background-color: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 2rem 1rem;
+}
+
+.container {
+  width: 100%;
+  max-width: 900px;
+}
+
+.top-bar {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 1rem;
+}
+
+header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+header h1 {
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+  color: #fff;
+}
+
+header p {
+  color: var(--text-muted);
+  font-size: 0.95rem;
+}
+
+/* Status Banner */
+.status-banner {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 16px;
+  padding: 1.5rem 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1.25rem;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+}
+
+.status-info {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+}
+
+.status-indicator {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background-color: var(--success);
+  box-shadow: 0 0 15px var(--success);
+  transition: all 0.3s ease;
+}
+
+.status-text h2 {
+  font-size: 1.4rem;
+  font-weight: 600;
+}
+
+.status-text p {
+  color: var(--text-muted);
+  font-size: 0.875rem;
+}
+
+.controls {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+select {
+  background: #334155;
+  color: #fff;
+  border: 1px solid #475569;
+  padding: 0.6rem 0.8rem;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  outline: none;
+  transition: background 0.2s;
+}
+
+select:hover {
+  background: #475569;
+}
+
+button {
+  background: #334155;
+  color: #fff;
+  border: 1px solid #475569;
+  padding: 0.6rem 1.2rem;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.1s;
+}
+
+button:hover {
+  background: #475569;
+}
+
+button:active {
+  transform: scale(0.98);
+}
+
+/* Grid de Métricas */
+.metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.card {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 14px;
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.card .title {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 600;
+}
+
+.card .value {
+  font-size: 1.8rem;
+  font-weight: 700;
+}
+
+.network-value {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.network-icon {
+  width: 1.35rem;
+  height: 1.35rem;
+  flex: 0 0 auto;
+  color: var(--accent);
+}
+
+.card .unit {
+  font-size: 1rem;
+  font-weight: 400;
+  color: var(--text-muted);
+}
+
+.card .subtitle {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.help-card {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 14px;
+  padding: 1.25rem;
+  margin-bottom: 1.5rem;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  line-height: 1.6;
+}
+
+.help-card h3 {
+  color: var(--text);
+  font-size: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+.help-card ul {
+  padding-left: 1.25rem;
+}
+
+.help-card li + li {
+  margin-top: 0.25rem;
+}
+
+.help-card strong {
+  color: var(--text);
+}
+
+.speed-test-card {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 14px;
+  padding: 1.25rem;
+  margin-bottom: 1.5rem;
+}
+
+.speed-test-card h2 {
+  font-size: 1.1rem;
+  margin-bottom: 0.5rem;
+}
+
+.speed-test-card p {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+.speed-test-warning {
+  margin: 0.75rem 0;
+  padding: 0.75rem 1rem;
+  border-left: 4px solid var(--warning);
+  background: rgba(245, 158, 11, 0.1);
+  border-radius: 6px;
+}
+
+.speed-test-warning strong {
+  color: var(--text);
+}
+
+.speed-test-controls {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+.speed-test-profile {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  color: var(--text-muted);
+  font-size: 0.8rem;
+}
+
+.speed-test-profile select {
+  min-width: 220px;
+}
+
+.speed-test-status {
+  min-height: 1.5em;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+}
+
+.speedometer {
+  display: grid;
+  justify-items: center;
+  margin: 1.25rem auto 0.5rem;
+  max-width: 360px;
+}
+
+.speedometer[hidden] {
+  display: none;
+}
+
+.speedometer svg {
+  width: min(100%, 300px);
+  overflow: visible;
+}
+
+.speedometer-track {
+  fill: none;
+  stroke: var(--card-border);
+  stroke-width: 14;
+  stroke-linecap: round;
+}
+
+.speedometer-progress {
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: 14;
+  stroke-linecap: round;
+  stroke-dasharray: 383;
+  stroke-dashoffset: 383;
+  transition: stroke-dashoffset 0.12s linear, stroke 0.2s ease;
+}
+
+.speedometer-needle {
+  stroke: var(--text);
+  stroke-width: 4;
+  stroke-linecap: round;
+  transform-origin: 150px 150px;
+  transition: transform 0.12s linear;
+}
+
+.speedometer-value {
+  fill: var(--text);
+  font-size: 25px;
+  font-weight: 700;
+  text-anchor: middle;
+}
+
+.speedometer-unit {
+  fill: var(--text-muted);
+  font-size: 13px;
+  text-anchor: middle;
+}
+
+.speedometer-label {
+  margin-top: -0.5rem;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+}
+
+.speed-test-results {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+.speed-test-results[hidden] {
+  display: none;
+}
+
+.speed-test-result {
+  padding: 1rem;
+  background: #0f172a;
+  border: 1px solid var(--card-border);
+  border-radius: 10px;
+}
+
+.speed-test-result span {
+  display: block;
+  color: var(--text-muted);
+  font-size: 0.8rem;
+}
+
+.speed-test-result strong {
+  display: block;
+  margin-top: 0.25rem;
+  font-size: 1.5rem;
+}
+
+.speed-test-feedback {
+  margin-top: 0.5rem;
+  color: var(--text-muted);
+  font-size: 0.82rem;
+  line-height: 1.45;
+}
+
+/* Gráfico */
+.chart-container {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 16px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.chart-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.chart-header h3 {
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.chart-header span {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+canvas {
+  width: 100%;
+  height: 180px;
+  display: block;
+}
+
+/* Footer / Logs */
+.info-footer {
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  line-height: 1.5;
+}
